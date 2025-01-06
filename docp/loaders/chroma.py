@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+:Purpose:   This module provides the entry point for loading a document
+            into a Chroma database.
+
+:Platform:  Linux/Windows | Python 3.10+
+:Developer: J Berendt
+:Email:     jeremy.berendt@rolls-royce.com
+
+:Comments:  n/a
+
+:Example:   For example code use, please refer to the :class:`LoadChroma`
+            class docstring.
+
+"""
+# pylint: disable=import-error
+# pylint: disable=wrong-import-position
+
+import os
+import sys
+# Set sys.path for relative imports.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import re
+from glob import glob
+# locals
+from loaders._chromabase import _LoadChromaBase
+
+
+class LoadChroma(_LoadChromaBase):
+    """Chroma database document loader.
+
+    Args:
+        path (str): Full path to the file (or *directory*) to be parsed
+            and loaded. Note: If this is a directory, a specific file
+            extension can be passed into the :meth:`load` method using
+            the ``ext`` argument.
+        db (str): Full path to the Chroma database *directory*.
+        collection (str): Name of the Chroma database collection into
+            which the data is to be loaded.
+
+    :Example:
+
+        Parse and load a *single* document into a Chroma database
+        collection::
+
+            >>> from docutils import LoadChroma
+
+            >>> l = LoadChroma(path='/path/to/file.pdf',
+                               db='/path/to/chroma',
+                               collection='spam')
+            >>> l.load()
+
+
+        Parse and load a *directory* of PDF documents into a Chroma
+        database collection::
+
+            >>> from docutils import LoadChroma
+
+            >>> l = LoadChroma(path='/path/to/directory',
+                               db='/path/to/chroma',
+                               collection='spam')
+            >>> l.load(ext='pdf')
+
+    """
+
+    def __init__(self, path: str, db: str, collection: str):
+        """Chroma database loader class initialiser."""
+        super().__init__(db=db, collection=collection)
+        self._path = path
+
+    def load(self, ext: str='**', recursive: bool=True):
+        """Load a document (or documents) into a Chroma database.
+
+        Args:
+            ext (str): If the ``path`` argument refers to a *directory*,
+                a specific file extension can be specified here.
+                For example::
+
+                    ext = 'pdf'
+
+                If anything other than ``'**'`` is provided, all
+                alpha-characters are parsed from the string, and prefixed
+                with ``*.``. Meaning, if ``'.pdf'`` is passed, the
+                characters ``'pdf'`` are parsed and prefixed with ``*.``
+                to create ``'*.pdf'``. However, if ``'things.foo'`` is
+                passed, the derived extension will be ``'*.thingsfoo'``.
+                Defaults to '**', for a recursive search.
+
+            recursive (bool, optional): If True, subdirectories are
+                searched. Defaults to True.
+
+        """
+        if os.path.isdir(self._path):
+            if ext != '**':
+                ext = f'*.{re.findall("[a-zA-Z]+", ext)[0]}'
+            files = glob(os.path.join(self._path, ext), recursive=recursive)
+            count = len(files)
+            for idx, f in enumerate(files, 1):
+                print(f'\nProcessing {idx} of {count}: {os.path.basename(f)}')
+                self._load(path=f)
+        else:
+            print(f'Processing: {os.path.basename(self._path)} ...')
+            self._load(path=self._path)
