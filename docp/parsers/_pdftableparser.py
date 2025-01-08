@@ -11,6 +11,12 @@
 Note:       This module is *not* designed to be interacted with
             directly, only via the appropriate interface class(es).
 
+            Rather, please create an instance of a PDF document parsing
+            object using the following:
+
+                - :class:`pdfparser.PDFParser`
+
+
 """
 # pylint: disable=import-error
 # pylint: disable=protected-access
@@ -21,7 +27,7 @@ import os
 import pandas as pd
 import shutil
 # locals
-from parsers._pdfbase import _ParsePDFBase
+from parsers._pdfbaseparser import _PDFBaseParser
 
 # TODO: Move to a config file/class.  (TOML?)
 _SETTINGS = {'vertical_strategy': 'lines',
@@ -29,7 +35,8 @@ _SETTINGS = {'vertical_strategy': 'lines',
              'snap_x_tolerance': 12}
 
 
-class _ParsePDFTable(_ParsePDFBase):
+# TODO: Revise the docstring.
+class _PDFTableParser(_PDFBaseParser):
     """Private PDF document table parser intermediate class.
 
     Args:
@@ -39,15 +46,16 @@ class _ParsePDFTable(_ParsePDFBase):
 
         Extract tables from a PDF file::
 
-            >>> from docutils.parsers.pdf import ParsePDF
+            >>> from docutils.parsers.pdf import PDFParser
 
             >>> path = '/path/to/myfile.pdf'
-            >>> pdf = ParsePDF(path)
+            >>> pdf = PDFParser(path)
             >>> pdf.extract_tables()
 
             >>> tables = pdf.doc.tables
 
     """
+
     def extract_tables(self,
                        table_settings: dict=None,
                        as_dataframe: bool=False,
@@ -119,7 +127,7 @@ class _ParsePDFTable(_ParsePDFBase):
             print('',
                   'Complete.',
                   f'{c} tables were extracted and stored at the path below.',
-                  f'Path: {self._table_opath}',
+                  f'Path: {self._tbl_opath}',
                   sep='\n')
 
     def _create_table_directory_path(self):
@@ -137,7 +145,7 @@ class _ParsePDFTable(_ParsePDFBase):
                              (os.path.splitext(os.path.basename(self._path))[0]
                               .lower()
                               .translate(trans))))
-        self._table_opath = path
+        self._tbl_opath = path
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -152,7 +160,7 @@ class _ParsePDFTable(_ParsePDFBase):
             str: Explicit path to the file to be written.
 
         """
-        path = os.path.join(self._table_opath,
+        path = os.path.join(self._tbl_opath,
                             f'pg{str(pageno).zfill(3)}_tb{str(tblno).zfill(3)}.csv')
         return path
 

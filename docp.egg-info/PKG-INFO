@@ -1,0 +1,55 @@
+Metadata-Version: 2.1
+Name: docp
+Version: 0.1.0.dev1
+Summary: A basic document parsing and loading utility.
+Author-email: The Developers <development@s3dev.uk>
+License: GNU GPL-3
+Project-URL: Documentation, https://github.com/s3dev/docp
+Project-URL: Homepage, https://github.com/s3dev/docp
+Project-URL: Repository, https://github.com/s3dev/docp
+Keywords: document,library,parsing,utility,utilities
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Utilities
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pdfplumber
+Requires-Dist: pandas
+Requires-Dist: unidecode
+Requires-Dist: utils4
+
+# A basic document parsing and loading utility.
+
+Currently a **placeholder** for when this project is ready in the near future.
+
+The ``docp`` project is a CPython library for extracting text from binary documents (e.g. PDF, DOCX, etc.) into Python objects, which can be used across various applications, ranging from simple plain-text extraction to loading the text into a Chroma database for LLM use.
+
+
+## Installation
+Coming soon ...
+
+
+## Toolset
+Coming soon ...
+
+
+## Using the Library
+Coming soon ...
+
+
+## Additional Information
+Coming soon ...
+

@@ -4,29 +4,29 @@
 :Purpose:   This module serves as the public interface for interacting
             with PDF files and parsing their contents.
 
-:Platform:  Linux
+:Platform:  Linux/Windows | Python 3.10+
 :Developer: J Berendt
-:Email:     jeremy.berendt@rolls-royce.com
+:Email:     development@s3dev.uk
 
 :Comments:  n/a
 
-:Example:   For example code use, please refer to the :class:`ParsePDF`
-            class docstring.
+:Example:   For example code usage, please refer to the
+            :class:`PDFParser` class docstring.
 
 """
 # pylint: disable=import-error
 # pylint: disable=wrong-import-position
 
+# Set sys.path for relative imports.
 import os
 import sys
-# Set sys.path for relative imports.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 # locals
-from parsers._pdftable import _ParsePDFTable
-from parsers._pdftext import _ParsePDFText
+from parsers._pdftableparser import _PDFTableParser
+from parsers._pdftextparser import _PDFTextParser
 
 
-class ParsePDF(_ParsePDFTable, _ParsePDFText):
+class PDFParser(_PDFTableParser, _PDFTextParser):
     """PDF document parser.
 
     Args:
@@ -36,24 +36,24 @@ class ParsePDF(_ParsePDFTable, _ParsePDFText):
 
         Extract text from a PDF file::
 
-            >>> from docutils import ParsePDF
+            >>> from docp import PDFParser
 
-            >>> path = '/path/to/myfile.pdf'
-            >>> pdf = ParsePDF(path)
+            >>> pdf = PDFParser(path='/path/to/myfile.pdf')
             >>> pdf.extract_text()
 
-            >>> text = pdf.doc.text
+            # Access the content of page 1.
+            >>> pg1 = pdf.doc.pages[1].content
 
 
         Extract tables from a PDF file::
 
-            >>> from docutils import ParsePDF
+            >>> from docp import PDFParser
 
-            >>> path = '/path/to/myfile.pdf'
-            >>> pdf = ParsePDF(path)
+            >>> pdf = PDFParser('/path/to/myfile.pdf')
             >>> pdf.extract_tables()
 
-            >>> tables = pdf.doc.tables
+            # Access the first table on page 1.
+            >>> tbl1 = pdf.doc.pages[1].tables[1]
 
     """
 
