@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 
 # Bring entry-points to the surface.
 try:
-    from loaders.chroma import LoadChroma
+    from loaders.chroma import ChromaLoader
 except ImportError as err:
     # The chroma loader requires a lot of backend which is not required for the parser.
     msg = f'An error occurred while importing the Chroma loader:\n- {err}'

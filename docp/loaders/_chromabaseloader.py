@@ -12,13 +12,18 @@
 
 """
 # pylint: disable=import-error
+# pylint: disable=no-name-in-module  # langchain.chains.RetrievalQA
+# pylint: disable=wrong-import-order
 # pylint: disable=wrong-import-position
 
+import contextlib
 import os
+import re
 import sys
 # Set sys.path for relative imports.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from chromadb.api.types import errors as chromadberrors
+from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from utils4.reporterror import reporterror
@@ -31,12 +36,37 @@ _PRE_ERR = '\n[ERROR]:'
 _PRE_WARN = '\n[WARNING]:'
 
 
-class _LoadChromaBase:
+class Tools:
+    """General tools used for loading documents."""
+
+    @staticmethod
+    def parse_to_keywords(resp: str) -> list:
+        """Parse the bot's response into a list of keywords.
+
+        Args:
+            resp (str): Text response directly from the bot.
+
+        Returns:
+            list: A list of keywords extracted from the response,
+            separated by asterisks as bullet points.
+
+        """
+        # Capture asterisk bullet points or a numbered list.
+        rexp = re.compile(r'(?:\*|[0-9]+\.)\s*(.*)\n')
+        trans = {45: ' ', 47: ' '}
+        resp_ = resp.translate(trans).lower()
+        kwds = rexp.findall(resp_)
+        if kwds:
+            return ', '.join(kwds)
+        return ''
+
+
+class _ChromaBaseLoader:
     """Base class for loading documents into a Chroma vector database.
 
     Args:
         path (str): Full path to the file to be parsed and loaded.
-        db (str | Chroma): Either the full path to the Chroma database
+        dbpath (str | Chroma): Either the full path to the Chroma database
             *directory*, or an instance of a :class:`~dbs.chroma.Chroma`
             database. If the instance is passed, the ``collection``
             argument is ignored.
@@ -48,26 +78,48 @@ class _LoadChromaBase:
 
     _PARSERS = {'.pdf': PDFParser}
 
-    def __init__(self, db: str | Chroma, collection: str=None):
+    def __init__(self,
+                 dbpath: str | Chroma,
+                 collection: str=None,
+                 load_keywords: bool=False,
+                 llm: object=None):
         """Chroma database class initialiser."""
-        self._db = db
+        self._dbpath = dbpath
         self._cname = collection
+        self._load_keywords = load_keywords
+        self._llm = llm
+        self._dbo = None            # Database object.
         self._docs = []             # List of 'Document' objects.
         self._docss = []            # List of 'Document' objects *with splits*.
+        self._fbase = None          # Basename of the document currently being loaded.
+        self._fpath = None          # Full path to the document currently being loaded.
         self._p = None              # Document parser object.
-        self._path = None           # Full path to the document being loaded.
         self._splitter = None       # Text splitter.
         self._set_db_client()
+        self._check_parameters()
 
     @property
     def chroma(self):
         """Accessor to the database client object."""
-        return self._db
+        return self._dbo
 
     @property
     def parser(self):
         """Accessor to the document parser object."""
         return self._p
+
+    def _check_parameters(self) -> None:
+        """Verify the class parameters are viable.
+
+        Raises:
+            ValueError: If the ``load_keywords`` argument is True and the
+                ``llm`` argument is None, or the inverse. Both arguments
+                must either sum to 0, or 2.
+
+        """
+        if sum((self._load_keywords, self._llm is not None)) not in (0, 2):
+            raise ValueError('For keyword loading, the load_keywords argument '
+                             'must be True and a model instance must be provided.')
 
     def _create_documents(self) -> bool:
         """Convert each extracted page into a ``Document`` object.
@@ -87,6 +139,28 @@ class _LoadChromaBase:
             return False
         return True
 
+    def _get_keywords(self) -> str:
+        """Query the document (using the LLM) to extract the keywords."""
+        # pylint: disable=line-too-long
+        print('- Extracting keywords ...')
+        qry = ('List the important keywords which can be used to summarize this '
+               f'document: "{self._fbase}". Use only phrases which are found in the document.')
+        # Suppress stdout.
+        with contextlib.redirect_stdout(None):
+            nids = len(self._dbo.get(where={'source': self._fbase})['ids'])
+            # Max of 50, min n records; prefer n records or 10%.
+            filter_ = {'k': min(nids, max(25, min(nids//10, 50))),
+                       'filter': {'source': {'$eq': self._fbase}}}
+            # TODO: Replace this with the module.cless.method once created.
+            qa = RetrievalQA.from_chain_type(llm=self._llm,
+                                             chain_type="stuff",
+                                             retriever=self._dbo.as_retriever(search_kwargs=filter_),
+                                             return_source_documents=True,
+                                             verbose=True)
+            resp = qa(qry)
+        kwds = Tools.parse_to_keywords(resp=resp['result'])
+        return kwds
+
     def _load(self, path: str, **kwargs):
         """Load the selected files into the vector store.
 
@@ -98,13 +172,17 @@ class _LoadChromaBase:
 
         """
         # pylint: disable=multiple-statements
-        self._path = path
+        self._fpath = path
+        self._fbase = os.path.basename(path)
         s = self._set_parser()
         if s: s = self._set_text_splitter()
         if s: s = self._parse_text(**kwargs)
         if s: s = self._create_documents()
         if s: s = self._split_texts()
         if s: s = self._load_worker()
+        if s and self._load_keywords and self._llm:
+            kwds = self._get_keywords()
+            s = self._store_keywords(kwds=kwds)
         self._print_summary(success=s)
 
     def _load_worker(self) -> bool:
@@ -119,9 +197,9 @@ class _LoadChromaBase:
         """
         try:
             print('- Loading the document into the database ...')
-            nrecs_b = self._db.collection.count()  # Count records before.
-            self._db.add_documents(self._docss)
-            nrecs_a = self._db.collection.count()  # Count records after.
+            nrecs_b = self._dbo.collection.count()  # Count records before.
+            self._dbo.add_documents(self._docss)
+            nrecs_a = self._dbo.collection.count()  # Count records after.
             return self._test_load(nrecs_b=nrecs_b, nrecs_a=nrecs_a)
         except chromadberrors.DuplicateIDError:
             print('-- Document already loaded; duplicate detected.')
@@ -174,8 +252,10 @@ class _LoadChromaBase:
 
         """
         try:
-            if isinstance(self._db, str):
-                self._db = Chroma(path=self._db, collection=self._cname)
+            if isinstance(self._dbpath, str):
+                self._dbo = Chroma(path=self._dbpath, collection=self._cname)
+            else:
+                self._dbo = self._dbpath
         except Exception as err:
             reporterror(err)
             return False
@@ -194,14 +274,16 @@ class _LoadChromaBase:
             Otherwise, False.
 
         """
-        # pylint: disable=invalid-name
-        ext = os.path.splitext(self._path)[1]
+        # pylint: disable=invalid-name  # OK as the variable (Parser) is a class.
+        # TODO: Updated this to use the (not-yet-available) ispdf utility
+        #       function, rather than relying on the file extension.
+        ext = os.path.splitext(self._fpath)[1]
         Parser = self._PARSERS.get(ext)
         if not Parser:
-            msg = f'{_PRE_WARN} Document parser not set for {os.path.basename(self._path)}.'
+            msg = f'{_PRE_WARN} Document parser not set for {os.path.basename(self._fpath)}.'
             ui.print_warning(msg)
             return False
-        self._p = Parser(path=self._path)
+        self._p = Parser(path=self._fpath)
         return True
 
     # TODO: Add these to a config.
@@ -232,6 +314,25 @@ class _LoadChromaBase:
             ui.print_warning(msg)
             return False
         return True
+
+    def _store_keywords(self, kwds: str) -> bool:
+        """Store the extracted keywords into the keywords collection.
+
+        Args:
+            kwds (str): A string containing the keywords extracted from
+                the document.
+
+        Returns:
+            bool: True if loaded successfully, otherwise False.
+
+        """
+        db = Chroma(path=self._dbo.path, collection=f'{self._cname}-kwds')
+        nrecs_b = db.collection.count()  # Count records before.
+        docs = [Document(page_content=kwds, metadata={'source': self._fbase})]
+        db.add_documents(docs)
+        db.persist()
+        nrecs_a = db.collection.count()  # Count records after.
+        return 1 == nrecs_a - nrecs_b
 
     def _test_load(self, nrecs_b: int, nrecs_a: int) -> bool:
         """Test the document was loaded successfully.

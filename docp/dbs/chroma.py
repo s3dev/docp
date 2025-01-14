@@ -16,6 +16,7 @@
 # pylint: disable=wrong-import-order
 
 import chromadb
+import os
 import torch
 from hashlib import md5
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -41,7 +42,7 @@ class Chroma(_Chroma):
 
     def __init__(self, path: str, collection: str):
         """Chroma database class initialiser."""
-        self._path = path
+        self._path = os.path.realpath(path)
         self._cname = collection
         self._client = None         # Database 'client' object
         self._dbc = None            # Database 'collection' object.
@@ -67,6 +68,11 @@ class Chroma(_Chroma):
     def embedding_function(self):
         """Accessor to the embedding function used."""
         return self._embfn
+
+    @property
+    def path(self) -> str:
+        """Accessor to the database's path."""
+        return self._path
 
     def add_documents(self, docs: list):
         """Add multiple documents to the collection.

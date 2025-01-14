@@ -16,7 +16,7 @@ docp.egg-info/top_level.txt
 docp/dbs/__init__.py
 docp/dbs/chroma.py
 docp/loaders/__init__.py
-docp/loaders/_chromabase.py
+docp/loaders/_chromabaseloader.py
 docp/loaders/chroma.py
 docp/objects/__init__.py
 docp/objects/_docbaseobject.py

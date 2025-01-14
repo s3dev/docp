@@ -24,10 +24,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import re
 from glob import glob
 # locals
-from loaders._chromabase import _LoadChromaBase
+from loaders._chromabaseloader import _ChromaBaseLoader
 
 
-class LoadChroma(_LoadChromaBase):
+class ChromaLoader(_ChromaBaseLoader):
     """Chroma database document loader.
 
     Args:
@@ -35,9 +35,29 @@ class LoadChroma(_LoadChromaBase):
             and loaded. Note: If this is a directory, a specific file
             extension can be passed into the :meth:`load` method using
             the ``ext`` argument.
-        db (str): Full path to the Chroma database *directory*.
+        dbpath (str): Full path to the Chroma database *directory*.
         collection (str): Name of the Chroma database collection into
             which the data is to be loaded.
+        load_keywords (bool, optional): Use the provided LLM
+            (via the ``llm`` parameter) to read the document and infer
+            keywords to be loaded into the ``<collection>-kwds``
+            database, for keyword-driven document filtering.
+            Note: This *requires* the ``llm`` parameter and is
+            recommended only for GPU-bound processing. Defaults to False.
+        llm (object, optional): An LLM *instance* which can be provided
+            directly into the
+            :func:`langchain.chains.RetrievalQA.from_chain_type` function
+            for keywork inferrence. This is *required* for keyword
+            loading. Defaults to None.
+
+    .. important::
+
+        The *deriving and loading of keywords* is only recommended for
+        **GPU-bound processing**, as the LLM is invoked to infer the
+        keywords for each given document.
+
+        If called on a 'standard' PC, this will take a *long* time to
+        complete, if it completes at all.
 
     :Example:
 
@@ -47,7 +67,7 @@ class LoadChroma(_LoadChromaBase):
             >>> from docp import LoadChroma
 
             >>> l = LoadChroma(path='/path/to/file.pdf',
-                               db='/path/to/chroma',
+                               dbpath='/path/to/chroma',
                                collection='spam')
             >>> l.load()
 
@@ -58,15 +78,24 @@ class LoadChroma(_LoadChromaBase):
             >>> from docp import LoadChroma
 
             >>> l = LoadChroma(path='/path/to/directory',
-                               db='/path/to/chroma',
+                               dbpath='/path/to/chroma',
                                collection='spam')
             >>> l.load(ext='pdf')
 
     """
 
-    def __init__(self, path: str, db: str, collection: str):
+    def __init__(self,
+                 path: str,
+                 dbpath: str,
+                 collection: str,
+                 *,
+                 load_keywords: bool=False,
+                 llm: object=None):
         """Chroma database loader class initialiser."""
-        super().__init__(db=db, collection=collection)
+        super().__init__(dbpath=dbpath,
+                         collection=collection,
+                         load_keywords=load_keywords,
+                         llm=llm)
         self._path = path
 
     def load(self,
