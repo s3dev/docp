@@ -7,7 +7,7 @@ name = "docp"
 description = "A basic document parsing and loading utility."
 authors = [{name = "The Developers", email = "development@s3dev.uk"}]
 classifiers = [
-               "Development Status :: 3 - Alpha",
+               "Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
                "Intended Audience :: End Users/Desktop",
                "Programming Language :: Python :: 3.7",

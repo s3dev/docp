@@ -32,6 +32,7 @@ docp/parsers/pdfparser.py
 pylintr/generate_rcfile.sh
 pylintr/pylintr.sh
 pylintr/results/dbs_chroma.plr
+pylintr/results/loaders__chromabaseloader.plr
 pylintr/results/loaders_chroma.plr
 pylintr/results/objects__docbaseobject.plr
 pylintr/results/objects__pageobject.plr

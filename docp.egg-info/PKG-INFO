@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: docp
-Version: 0.1.0.dev3
+Version: 0.1.0b1
 Summary: A basic document parsing and loading utility.
 Author-email: The Developers <development@s3dev.uk>
 License: GNU GPL-3
@@ -8,7 +8,7 @@ Project-URL: Documentation, https://github.com/s3dev/docp
 Project-URL: Homepage, https://github.com/s3dev/docp
 Project-URL: Repository, https://github.com/s3dev/docp
 Keywords: document,library,parsing,utility,utilities
-Classifier: Development Status :: 3 - Alpha
+Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: End Users/Desktop
 Classifier: Programming Language :: Python :: 3.7
