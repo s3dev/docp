@@ -1,7 +1,7 @@
 Pylint Summary:
 ------------------------
 dbs_chroma.plr: 10.00/10
-loaders__chromabase.plr: 10.00/10
+loaders__chromabaseloader.plr: 10.00/10
 loaders_chroma.plr: 10.00/10
 objects__docbaseobject.plr: 10.00/10
 objects__pageobject.plr: 10.00/10
@@ -13,4 +13,4 @@ parsers_pdfparser.plr: 10.00/10
 parsers__pdftableparser.plr: 10.00/10
 parsers__pdftextparser.plr: 10.00/10
 ------------------------
-Run date: Mon 13 Jan 13:51:36 GMT 2025
+Run date: Thu 16 Jan 14:15:11 GMT 2025

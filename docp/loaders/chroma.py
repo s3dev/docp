@@ -10,21 +10,21 @@
 
 :Comments:  n/a
 
-:Example:   For example code use, please refer to the :class:`LoadChroma`
-            class docstring.
+:Example:   For example code use, please refer to the
+            :class:`ChromaLoader` class docstring.
 
-"""
 # pylint: disable=import-error
 # pylint: disable=wrong-import-position
+"""
 
 import os
-import sys
-# Set sys.path for relative imports.
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import re
 from glob import glob
 # locals
-from loaders._chromabaseloader import _ChromaBaseLoader
+try:
+    from .loaders._chromabaseloader import _ChromaBaseLoader
+except ImportError:
+    from loaders._chromabaseloader import _ChromaBaseLoader
 
 
 class ChromaLoader(_ChromaBaseLoader):
@@ -49,6 +49,8 @@ class ChromaLoader(_ChromaBaseLoader):
             :func:`langchain.chains.RetrievalQA.from_chain_type` function
             for keywork inferrence. This is *required* for keyword
             loading. Defaults to None.
+        offline (bool, optional): Remain offline and use the locally
+            cached embedding function model. Defaults to False.
 
     .. important::
 
@@ -64,22 +66,22 @@ class ChromaLoader(_ChromaBaseLoader):
         Parse and load a *single* document into a Chroma database
         collection::
 
-            >>> from docp import LoadChroma
+            >>> from docp import ChromaLoader
 
-            >>> l = LoadChroma(path='/path/to/file.pdf',
-                               dbpath='/path/to/chroma',
-                               collection='spam')
+            >>> l = ChromaLoader(path='/path/to/file.pdf',
+                                 dbpath='/path/to/chroma',
+                                 collection='spam')
             >>> l.load()
 
 
         Parse and load a *directory* of PDF documents into a Chroma
         database collection::
 
-            >>> from docp import LoadChroma
+            >>> from docp import ChromaLoader
 
-            >>> l = LoadChroma(path='/path/to/directory',
-                               dbpath='/path/to/chroma',
-                               collection='spam')
+            >>> l = ChromaLoader(path='/path/to/directory',
+                                 dbpath='/path/to/chroma',
+                                 collection='spam')
             >>> l.load(ext='pdf')
 
     """
@@ -90,12 +92,14 @@ class ChromaLoader(_ChromaBaseLoader):
                  collection: str,
                  *,
                  load_keywords: bool=False,
-                 llm: object=None):
+                 llm: object=None,
+                 offline: bool=False):
         """Chroma database loader class initialiser."""
         super().__init__(dbpath=dbpath,
                          collection=collection,
                          load_keywords=load_keywords,
-                         llm=llm)
+                         llm=llm,
+                         offline=offline)
         self._path = path
 
     def load(self,

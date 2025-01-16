@@ -2,7 +2,7 @@
 
 Report
 ======
-50 statements analysed.
+67 statements analysed.
 
 Statistics by type
 ------------------
@@ -14,7 +14,7 @@ Statistics by type
 +---------+-------+-----------+-----------+------------+---------+
 |class    |1      |1          |=          |100.00      |0.00     |
 +---------+-------+-----------+-----------+------------+---------+
-|method   |10     |10         |=          |100.00      |0.00     |
+|method   |12     |12         |=          |100.00      |0.00     |
 +---------+-------+-----------+-----------+------------+---------+
 |function |0      |NC         |NC         |0           |0        |
 +---------+-------+-----------+-----------+------------+---------+
@@ -26,14 +26,14 @@ External dependencies
 ::
 
     chromadb (docp.dbs.chroma)
-    langchain 
-      \-embeddings (docp.dbs.chroma)
+    langchain_community 
       \-vectorstores (docp.dbs.chroma)
+    langchain_huggingface (docp.dbs.chroma)
     torch (docp.dbs.chroma)
 
 
 
-135 lines have been analyzed
+186 lines have been analyzed
 
 Raw metrics
 -----------
@@ -41,13 +41,13 @@ Raw metrics
 +----------+-------+------+---------+-----------+
 |type      |number |%     |previous |difference |
 +==========+=======+======+=========+===========+
-|code      |61     |45.19 |61       |=          |
+|code      |84     |45.16 |83       |+1.00      |
 +----------+-------+------+---------+-----------+
-|docstring |49     |36.30 |49       |=          |
+|docstring |72     |38.71 |73       |-1.00      |
 +----------+-------+------+---------+-----------+
-|comment   |11     |8.15  |11       |=          |
+|comment   |14     |7.53  |14       |=          |
 +----------+-------+------+---------+-----------+
-|empty     |14     |10.37 |14       |=          |
+|empty     |16     |8.60  |16       |=          |
 +----------+-------+------+---------+-----------+
 
 

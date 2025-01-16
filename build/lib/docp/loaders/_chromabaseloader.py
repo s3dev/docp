@@ -11,17 +11,11 @@
 :Comments:  n/a
 
 """
-# pylint: disable=import-error
 # pylint: disable=no-name-in-module  # langchain.chains.RetrievalQA
-# pylint: disable=wrong-import-order
-# pylint: disable=wrong-import-position
 
 import contextlib
 import os
 import re
-import sys
-# Set sys.path for relative imports.
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from chromadb.api.types import errors as chromadberrors
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
@@ -29,8 +23,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from utils4.reporterror import reporterror
 from utils4.user_interface import ui
 # locals
-from dbs.chroma import Chroma
-from parsers.pdfparser import PDFParser
+try:
+    from .dbs.chroma import ChromaDB
+    from .parsers.pdfparser import PDFParser
+except ImportError:
+    from dbs.chroma import ChromaDB
+    from parsers.pdfparser import PDFParser
 
 _PRE_ERR = '\n[ERROR]:'
 _PRE_WARN = '\n[WARNING]:'
@@ -73,21 +71,26 @@ class _ChromaBaseLoader:
         collection (str, optional): Name of the Chroma database
             collection. Only required if the ``db`` parameter is a path.
             Defaults to None.
+        offline (bool, optional): Remain offline and use the locally
+            cached embedding function model. Defaults to False.
 
     """
 
     _PARSERS = {'.pdf': PDFParser}
 
     def __init__(self,
-                 dbpath: str | Chroma,
+                 dbpath: str | ChromaDB,
                  collection: str=None,
+                 *,
                  load_keywords: bool=False,
-                 llm: object=None):
+                 llm: object=None,
+                 offline: bool=False):
         """Chroma database class initialiser."""
         self._dbpath = dbpath
         self._cname = collection
         self._load_keywords = load_keywords
         self._llm = llm
+        self._offline = offline
         self._dbo = None            # Database object.
         self._docs = []             # List of 'Document' objects.
         self._docss = []            # List of 'Document' objects *with splits*.
@@ -157,7 +160,7 @@ class _ChromaBaseLoader:
                                              retriever=self._dbo.as_retriever(search_kwargs=filter_),
                                              return_source_documents=True,
                                              verbose=True)
-            resp = qa(qry)
+            resp = qa.invoke(qry)
         kwds = Tools.parse_to_keywords(resp=resp['result'])
         return kwds
 
@@ -203,7 +206,7 @@ class _ChromaBaseLoader:
             return self._test_load(nrecs_b=nrecs_b, nrecs_a=nrecs_a)
         except chromadberrors.DuplicateIDError:
             print('-- Document already loaded; duplicate detected.')
-            return True  # Allow to pass
+            return False  # Prevent from loading keywords.
         except Exception as err:
             reporterror(err)
         return False
@@ -253,7 +256,9 @@ class _ChromaBaseLoader:
         """
         try:
             if isinstance(self._dbpath, str):
-                self._dbo = Chroma(path=self._dbpath, collection=self._cname)
+                self._dbo = ChromaDB(path=self._dbpath,
+                                     collection=self._cname,
+                                     offline=self._offline)
             else:
                 self._dbo = self._dbpath
         except Exception as err:
@@ -286,7 +291,7 @@ class _ChromaBaseLoader:
         self._p = Parser(path=self._fpath)
         return True
 
-    # TODO: Add these to a config.
+    # TODO: Add these to a config file.
     def _set_text_splitter(self) -> bool:
         """Define the text splitter to be used.
 
@@ -326,11 +331,11 @@ class _ChromaBaseLoader:
             bool: True if loaded successfully, otherwise False.
 
         """
-        db = Chroma(path=self._dbo.path, collection=f'{self._cname}-kwds')
+        print('- Storing keywords ...')
+        db = ChromaDB(path=self._dbo.path, collection=f'{self._cname}-kwds', offline=self._offline)
         nrecs_b = db.collection.count()  # Count records before.
         docs = [Document(page_content=kwds, metadata={'source': self._fbase})]
         db.add_documents(docs)
-        db.persist()
         nrecs_a = db.collection.count()  # Count records after.
         return 1 == nrecs_a - nrecs_b
 
