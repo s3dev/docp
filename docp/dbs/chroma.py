@@ -10,11 +10,18 @@
 :Developer: J Berendt
 :Email:     development@s3dev.uk
 
-:Comments:  n/a
+:Comments:  This module uses the
+            ``langchain_community.vectorstores.Chroma`` wrapper class,
+            rather than the base ``chromadb`` library  as it provides the
+            ``add_texts`` method which supports GPU processing and
+            parallelisation; which is implemented by this module's
+            :meth:`~ChromaDB.add_documents` method.
 
 """
+# pylint: disable=import-error
 # pylint: disable=wrong-import-order
 
+from __future__ import annotations
 import chromadb
 import os
 import torch
@@ -81,19 +88,25 @@ class ChromaDB(_Chroma):
         """Accessor to the database's path."""
         return self._path
 
-    def add_documents(self, docs: list):
+    def add_documents(self, docs: list[langchain_core.documents.base.Document]):  # noqa  # pylint: disable=undefined-variable
         """Add multiple documents to the collection.
 
-        This method wraps ``Chroma.add_texts`` method which supports GPU
-        processing and parallelisation. The ID is derived locally from
-        the file's basename, page number and page content.
+        This method overrides the base class' ``add_documents`` method
+        to enable local ID derivation. Knowing *how* the IDs are derived
+        gives us greater understanding and querying ability of the
+        documents in the database. Each ID is derived locally by the
+        :meth:`_preproc` method from the file's basename, page number
+        and page content.
+
+        Additionally, this method wraps the
+        :func:`langchain_community.vectorstores.Chroma.add_texts`
+        method which supports GPU processing and parallelisation.
 
         Args:
             docs (list): A list of ``langchain_core.documents.base.Document``
                 document objects.
 
         """
-        # This method overrides the base class' add_documents method.
         # pylint: disable=arguments-differ
         # pylint: disable=arguments-renamed
         if not isinstance(docs, list):

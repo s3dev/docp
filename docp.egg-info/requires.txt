@@ -1,4 +1,3 @@
-pdfplumber
 pandas
 unidecode
 utils4

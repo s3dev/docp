@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-:Purpose:   This module provides functionality to parse and store
-            document data into a Chroma vector database.
+:Purpose:   This module provides the base functionality for parsing and
+            storing a document's data into a Chroma vector database.
 
 :Platform:  Linux/Windows | Python 3.10+
 :Developer: J Berendt
@@ -10,12 +10,23 @@
 
 :Comments:  n/a
 
+.. attention::
+
+            This module is *not* designed to be interacted with
+            directly, only via the appropriate interface class(es).
+
+            Rather, please create an instance of a Chroma
+            document-type-specific loader object using one of the
+            following classes:
+
+                - :class:`~docp.loaders.chromapdfloader.ChromaPDFLoader`
+                - :class:`~docp.loaders.chromapptxloader.ChromaPPTXLoader`
+
 """
 # pylint: disable=no-name-in-module  # langchain.chains.RetrievalQA
 
 import contextlib
 import os
-import re
 from chromadb.api.types import errors as chromadberrors
 from langchain.chains import RetrievalQA
 from langchain.docstore.document import Document
@@ -25,69 +36,51 @@ from utils4.user_interface import ui
 # locals
 try:
     from .dbs.chroma import ChromaDB
-    from .parsers.pdfparser import PDFParser
+    from .libs.utilities import utilities
 except ImportError:
     from dbs.chroma import ChromaDB
-    from parsers.pdfparser import PDFParser
-
-_PRE_ERR = '\n[ERROR]:'
-_PRE_WARN = '\n[WARNING]:'
-
-
-class Tools:
-    """General tools used for loading documents."""
-
-    @staticmethod
-    def parse_to_keywords(resp: str) -> list:
-        """Parse the bot's response into a list of keywords.
-
-        Args:
-            resp (str): Text response directly from the bot.
-
-        Returns:
-            list: A list of keywords extracted from the response,
-            separated by asterisks as bullet points.
-
-        """
-        # Capture asterisk bullet points or a numbered list.
-        rexp = re.compile(r'(?:\*|[0-9]+\.)\s*(.*)\n')
-        trans = {45: ' ', 47: ' '}
-        resp_ = resp.translate(trans).lower()
-        kwds = rexp.findall(resp_)
-        if kwds:
-            return ', '.join(kwds)
-        return ''
+    from libs.utilities import utilities
 
 
 class _ChromaBaseLoader:
     """Base class for loading documents into a Chroma vector database.
 
     Args:
-        path (str): Full path to the file to be parsed and loaded.
-        dbpath (str | Chroma): Either the full path to the Chroma database
-            *directory*, or an instance of a :class:`~dbs.chroma.Chroma`
-            database. If the instance is passed, the ``collection``
-            argument is ignored.
+        dbpath (str | ChromaDB): Either the full path to the Chroma
+            database *directory*, or an instance of a
+            :class:`~docp.dbs.chroma.ChromaDB` class. If the instance is
+            passed, the ``collection`` argument is ignored.
         collection (str, optional): Name of the Chroma database
             collection. Only required if the ``db`` parameter is a path.
             Defaults to None.
+        split_text (bool, optional): Split the document into chunks,
+            before loading it into the database. Defaults to True.
+        load_keywords (bool, optional): Derive keywords from the document
+            and load these into the sister keywords collection.
+            Defaults to False.
+        llm (object, optional): If deriving keywords, this is the LLM
+            which will do the derivation. Defaults to None.
         offline (bool, optional): Remain offline and use the locally
             cached embedding function model. Defaults to False.
 
     """
+    # pylint: disable=assignment-from-no-return  # These are stub methods.
 
-    _PARSERS = {'.pdf': PDFParser}
+    _PFX_ERR = '\n[ERROR]:'
+    _PFX_WARN = '\n[WARNING]:'
 
     def __init__(self,
                  dbpath: str | ChromaDB,
                  collection: str=None,
                  *,
+                 split_text: bool=True,
                  load_keywords: bool=False,
                  llm: object=None,
                  offline: bool=False):
         """Chroma database class initialiser."""
         self._dbpath = dbpath
         self._cname = collection
+        self._split_text = split_text
         self._load_keywords = load_keywords
         self._llm = llm
         self._offline = offline
@@ -111,6 +104,28 @@ class _ChromaBaseLoader:
         """Accessor to the document parser object."""
         return self._p
 
+    def _already_loaded(self) -> bool:
+        """Test if the file has already been loaded into the collection.
+
+        :Logic:
+            This test is performed by querying the collection for a
+            metadata 'source' which equals the filename. As this uses
+            a chromadb 'filter' (i.e. ``$eq``), testing for partial
+            matches is not possible at this time.
+
+            If the filename is different (in any way) from the source's
+            filename in the database, the file will be loaded again.
+
+        Returns:
+            bool: True is the *exact* filename was found in the
+            collection's metadata, otherwise False.
+
+        """
+        if self._dbo.collection.get(where={'source': {'$eq': self._fbase}})['ids']:
+            print(f'-- File already loaded: {self._fbase} - skipping')
+            return True
+        return False
+
     def _check_parameters(self) -> None:
         """Verify the class parameters are viable.
 
@@ -125,22 +140,7 @@ class _ChromaBaseLoader:
                              'must be True and a model instance must be provided.')
 
     def _create_documents(self) -> bool:
-        """Convert each extracted page into a ``Document`` object.
-
-        Returns:
-            bool: True of the pages are loaded as ``Document`` objects
-            successfully. Otherwise False.
-
-        """
-        self._docs = [Document(page_content=page.content,
-                               metadata={'source': self._p.doc.basename,
-                                         'pageno': page.pageno})
-                      for page in self._p.doc.pages if page.hastext]
-        if not self._docs:
-            msg = f'{_PRE_WARN} Text could not be parsed from {self._p.doc.basename}.'
-            ui.print_warning(msg)
-            return False
-        return True
+        """Stub method; overridden by the child class."""
 
     def _get_keywords(self) -> str:
         """Query the document (using the LLM) to extract the keywords."""
@@ -161,24 +161,27 @@ class _ChromaBaseLoader:
                                              return_source_documents=True,
                                              verbose=True)
             resp = qa.invoke(qry)
-        kwds = Tools.parse_to_keywords(resp=resp['result'])
+        kwds = utilities.parse_to_keywords(resp=resp['result'])
         return kwds
 
     def _load(self, path: str, **kwargs):
-        """Load the selected files into the vector store.
+        """Load the provided file into the vector store.
 
         Args:
             path (str): Full path to the file to be loaded.
 
         :Keyword Arguments:
-            Those passed from the loader-specific ``load`` method.
+            Those passed from the document-type-specific loader's
+            :func:`load` method.
 
         """
         # pylint: disable=multiple-statements
         self._fpath = path
         self._fbase = os.path.basename(path)
-        s = self._set_parser()
-        if s: s = self._set_text_splitter()
+        if self._already_loaded():
+            return
+        self._set_parser()
+        s = self._set_text_splitter()
         if s: s = self._parse_text(**kwargs)
         if s: s = self._create_documents()
         if s: s = self._split_texts()
@@ -198,6 +201,7 @@ class _ChromaBaseLoader:
             exceptions being raised.
 
         """
+        # pylint: disable=line-too-long
         try:
             print('- Loading the document into the database ...')
             nrecs_b = self._dbo.collection.count()  # Count records before.
@@ -205,29 +209,14 @@ class _ChromaBaseLoader:
             nrecs_a = self._dbo.collection.count()  # Count records after.
             return self._test_load(nrecs_b=nrecs_b, nrecs_a=nrecs_a)
         except chromadberrors.DuplicateIDError:
-            print('-- Document already loaded; duplicate detected.')
+            print('  -- Document *chunk* already loaded, duplication detected. File may be corrupt.')
             return False  # Prevent from loading keywords.
         except Exception as err:
             reporterror(err)
         return False
 
     def _parse_text(self, **kwargs) -> bool:
-        """Parse text from the document.
-
-        :Keyword Arguments:
-            Those to be passed into the text extraction method.
-
-        Returns:
-            bool: True if the parser's 'text' object is populated,
-            otherwise False.
-
-        """
-        print('- Extracting text ...')
-        self._p.extract_text(**kwargs)
-        if len(self._p.doc.pages) < 2:
-            ui.print_warning(f'No text extracted from {self._p.doc.basename}')
-            return False
-        return True
+        """Stub method, overridden by the child class."""
 
     @staticmethod
     def _print_summary(success: bool):
@@ -266,30 +255,8 @@ class _ChromaBaseLoader:
             return False
         return True
 
-    def _set_parser(self) -> bool:
-        """Set the appropriate document parser.
-
-        :Rationale:
-            The parser is set by the file extension. For example, a file
-            extension ``.pdf`` will set the
-            :class:`parsers.pdfparser.PDFParser` class.
-
-        Returns:
-            bool: True if a file extension appropriate parser was found.
-            Otherwise, False.
-
-        """
-        # pylint: disable=invalid-name  # OK as the variable (Parser) is a class.
-        # TODO: Updated this to use the (not-yet-available) ispdf utility
-        #       function, rather than relying on the file extension.
-        ext = os.path.splitext(self._fpath)[1]
-        Parser = self._PARSERS.get(ext)
-        if not Parser:
-            msg = f'{_PRE_WARN} Document parser not set for {os.path.basename(self._fpath)}.'
-            ui.print_warning(msg)
-            return False
-        self._p = Parser(path=self._fpath)
-        return True
+    def _set_parser(self):
+        """Stub method, overridden by the child class."""
 
     # TODO: Add these to a config file.
     def _set_text_splitter(self) -> bool:
@@ -307,15 +274,24 @@ class _ChromaBaseLoader:
     def _split_texts(self) -> bool:
         """Split the document text using a recursive text splitter.
 
+        Note:
+            If the ``split_text`` parameter was passed as ``False`` on
+            instantiation, the texts will not be split. Rather, the
+            :attr:`_docs` list is simply *copied* to the :attr:`_docss`
+            attribute.
+
         Returns:
-            bool: True if the text was split successfully, otherwise
-            False.
+            bool: True if the text was split (or copied) successfully,
+            otherwise False.
 
         """
-        self._docss = self._splitter.split_documents(self._docs)
+        if self._split_text:
+            self._docss = self._splitter.split_documents(self._docs)
+        else:
+            self._docss = self._docs[:]
         if not self._docss:
-            msg = (f'{_PRE_ERR} An error occurred while splitting the documents for '
-                   f'{self._p.doc.basename}.')
+            msg = (f'{self._PFX_ERR} An error occurred while splitting the documents for '
+                   f'{self._fbase}.')
             ui.print_warning(msg)
             return False
         return True
@@ -358,5 +334,5 @@ class _ChromaBaseLoader:
 
         """
         if nrecs_a == nrecs_b:
-            ui.print_warning(f'{_PRE_WARN} No new documents added. Possibly already loaded?')
+            ui.print_warning(f'{self._PFX_WARN} No new documents added. Possibly already loaded?')
         return nrecs_a == nrecs_b + len(self._docss)

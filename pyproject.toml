@@ -7,7 +7,7 @@ name = "docp"
 description = "A basic document parsing and loading utility."
 authors = [{name = "The Developers", email = "development@s3dev.uk"}]
 classifiers = [
-               "Development Status :: 4 - Beta",
+               "Development Status :: 5 - Production/Stable",
                "Intended Audience :: Developers",
                "Intended Audience :: End Users/Desktop",
                "Programming Language :: Python :: 3.7",
@@ -24,11 +24,10 @@ classifiers = [
                "Topic :: Utilities",
               ]
 dependencies = [
-                "pdfplumber",
                 "pandas",
                 "unidecode",
                 "utils4",
-                ]
+               ]
 dynamic = ["version"]
 keywords = [
             "document",
@@ -42,8 +41,7 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.7"
 
 [project.urls]
-# Documentation = "https://docp.readthedocs.io"
-Documentation = "https://github.com/s3dev/docp"  # TODO: Replace me!
+Documentation = "https://docp.readthedocs.io"
 Homepage = "https://github.com/s3dev/docp"
 Repository = "https://github.com/s3dev/docp"
 
@@ -54,3 +52,4 @@ version = {attr = "docp.__version__"}
 where = ["."]
 include = ["docp"]
 exclude = []
+

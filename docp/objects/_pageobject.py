@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-:Purpose:   This module provides the ``page`` object implementation.
+:Purpose:   This module provides the implementation for the
+            ``PageObject`` object.
 
 :Platform:  Linux/Windows | Python 3.10+
 :Developer: J Berendt
@@ -82,7 +83,7 @@ class PageObject:
         """Accessor to the page number.
 
         Note:
-            This is the page number 1-n, concerning the page's *sequence
+            This is the page number with regard to the page's *sequence
             in the overall document*. This is *not* guaranteed to be the
             page's number per the document's page labeling scheme.
 

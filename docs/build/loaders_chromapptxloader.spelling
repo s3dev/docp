@@ -1,0 +1,2 @@
+source/loaders_chromapptxloader.rst:6: (chromapptxloader)  Module: loaders/chromapptxloader.py
+../docp/loaders/chromapptxloader.py:docstring of docp.loaders.chromapptxloader.ChromaPPTXLoader:41: (textbox)  text is found in the same 'shape' (textbox) on a slide.

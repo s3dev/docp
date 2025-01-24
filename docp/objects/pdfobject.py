@@ -12,9 +12,13 @@
 :Comments:  n/a
 
 """
-# pylint: disable=import-error
 
-from objects._docbaseobject import _DocBase
+try:
+    from .objects._docbaseobject import _DocBase
+    from .objects._pageobject import PageObject
+except ImportError:
+    from objects._docbaseobject import _DocBase
+    from objects._pageobject import PageObject
 
 
 class DocPDF(_DocBase):
@@ -24,6 +28,24 @@ class DocPDF(_DocBase):
         """PDF document object class initialiser."""
         super().__init__()
         self._tags = False
+        # List of PageObjects, offset by 1 to align the index with page numbers.
+        self._pages = [PageObject(pageno=0)]
+
+    @property
+    def pages(self) -> list[PageObject]:
+        """A list of containing an object for each page in the document.
+
+        .. tip::
+
+            The page number index aligns to the page number in the PDF
+            file.
+
+            For example, to access the ``PageObject`` for page 42, use::
+
+                pages[42]
+
+       """
+        return self._pages
 
     @property
     def parsed_using_tags(self) -> bool:

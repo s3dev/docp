@@ -8,13 +8,17 @@
 :Developer: J Berendt
 :Email:     development@s3dev.uk
 
-Note:       This module is *not* designed to be interacted with
+:Comments:  n/a
+
+.. attention::
+
+            This module is *not* designed to be interacted with
             directly, only via the appropriate interface class(es).
 
             Rather, please create an instance of a PDF document parsing
-            object using the following:
+            object using the following class:
 
-                - :class:`pdfparser.PDFParser`
+                - :class:`~docp.parsers.pdfparser.PDFParser`
 
 """
 # pylint: disable=import-error
@@ -26,7 +30,12 @@ import pdfplumber
 from collections import Counter
 from unidecode import unidecode
 # locals
-from objects.pdfobject import DocPDF
+try:
+    from .libs.utilities import utilities
+    from .objects.pdfobject import DocPDF
+except ImportError:
+    from libs.utilities import utilities
+    from objects.pdfobject import DocPDF
 
 
 class _PDFBaseParser:
@@ -94,7 +103,7 @@ class _PDFBaseParser:
             case 1: num = 1
             case _ if npages in range(2, 11): num = 2
             case _: num = 5
-        pg = self._doc.parser.pages[num]  # The pages list has a has a page offset at [0].
+        pg = self._doc.parser.pages[num - 1]  # The parser does not have a page offset at [0].
         # Default coordinates to the whole page.
         coords = {'x0': 0, 'top': 0, 'x1': pg.width, 'bottom': pg.height}
         # If the header and/or footer is to be skipped, find and iterate
@@ -117,6 +126,13 @@ class _PDFBaseParser:
     def _open(self) -> None:
         """Open the PDF document for reading.
 
+        Before opening the file, a test is performed to ensure the PDF
+        is valid. The file must:
+
+            - exist
+            - be a valid PDF file, per the file signature
+            - have a .pdf file extension
+
         :Other Operations:
 
             - Store the ``pdfplumber`` parser object returned from the
@@ -127,10 +143,20 @@ class _PDFBaseParser:
             - Store the document's meta data into the
               :attr:`self._doc._meta` attribute.
 
+        Raises:
+            TypeError: Raised if the file type criteria above are not
+            met.
+
         """
-        self._doc._parser = pdfplumber.open(self._doc._fpath)
-        self._doc._npages = len(self._doc._parser.pages)
-        self._doc._meta = self._doc._parser.metadata
+        if all((os.path.exists(self._doc._fpath),
+                utilities.ispdf(self._doc._fpath),
+                os.path.splitext(self._doc._fpath)[1].lower() == '.pdf')):
+            self._doc._parser = pdfplumber.open(self._doc._fpath)
+            self._doc._npages = len(self._doc._parser.pages)
+            self._doc._meta = self._doc._parser.metadata
+        else:
+            msg = f'{self._doc._fname} is not a valid PDF file.'
+            raise TypeError(msg)
 
     @staticmethod
     def _prepare_row(row: list) -> str:
@@ -196,13 +222,13 @@ class _PDFBaseParser:
         # Only scan if document has more than three pages.
         if self._doc.npages < 4:
             return []
-        if self._doc.common is None:
+        if self._doc._common is None:
             # Create a line generator for all pages.
             lines = (l for p in self._doc.parser.pages for l in p.extract_text().split('\n'))
             # Return the lines whose occurrence rate is 90% of document pages.
             self._doc._common = [i[0] for i in Counter(lines).most_common()
                                  if i[1] > self._doc.npages * 0.9]
-        return self._doc.common
+        return self._doc._common
 
     def _set_paths(self) -> None:
         """Set the document's file path attributes."""

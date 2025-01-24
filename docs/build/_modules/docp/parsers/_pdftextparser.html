@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>docp.parsers._pdftextparser &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1be0d999"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            docp
+              <img src="../../../_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../library.html">Library API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">docp.parsers._pdftextparser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for docp.parsers._pdftextparser</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:Purpose:   This module provides the logic for parsing text from a PDF</span>
+<span class="sd">            document.</span>
+
+<span class="sd">:Platform:  Linux/Windows | Python 3.10+</span>
+<span class="sd">:Developer: J Berendt</span>
+<span class="sd">:Email:     development@s3dev.uk</span>
+
+<span class="sd">.. attention::</span>
+
+<span class="sd">            This module is *not* designed to be interacted with</span>
+<span class="sd">            directly, only via the appropriate interface class(es).</span>
+
+<span class="sd">            Rather, please create an instance of a PDF document parsing</span>
+<span class="sd">            object using the following:</span>
+
+<span class="sd">                - :class:`~docp.parsers.pdfparser.PDFParser`</span>
+
+<span class="sd">.. note::</span>
+
+<span class="sd">            **Multi-processing**</span>
+
+<span class="sd">            Text extraction through multi-processing has been tested and</span>
+<span class="sd">            is not feasible due to an error indicating</span>
+<span class="sd">            the ``pdfplumber.page.Page`` object can not be pickled. This</span>
+<span class="sd">            object was being passed into the extraction method as the</span>
+<span class="sd">            object contains the :func:`extract_text` function.</span>
+
+<span class="sd">            Additionally, multi-threading has also been tested and</span>
+<span class="sd">            it was determined to be too complex and inefficient. This was</span>
+<span class="sd">            tested using the ``concurrent.futures.ThreadPoolExecutor``</span>
+<span class="sd">            class and two documents, 14 and 92 pages; the timings are</span>
+<span class="sd">            shown below. The multi-threaded approach took longer to</span>
+<span class="sd">            process and added unnecessary complexity to the code base.</span>
+<span class="sd">            As a side-effect, the pages are processed and stored out of</span>
+<span class="sd">            order which would require a re-order, adding more complexity.</span>
+
+<span class="sd">            It has therefore been determined that this module will remain</span>
+<span class="sd">            single-threaded.</span>
+
+<span class="sd">            **Multi-Thread Timings**</span>
+
+<span class="sd">                - **Single-threaded:**</span>
+
+<span class="sd">                  - 14 page document: ~2 seconds</span>
+<span class="sd">                  - 92 page document: ~32 seconds</span>
+
+<span class="sd">                - **Multi-threaded:**</span>
+
+<span class="sd">                  - 14 page document: ~2 seconds</span>
+<span class="sd">                  - 92 page document: ~35 seconds</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=import-error</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">unidecode</span> <span class="kn">import</span> <span class="n">unidecode</span>
+<span class="c1"># locals</span>
+<span class="kn">from</span> <span class="nn">objects._pageobject</span> <span class="kn">import</span> <span class="n">PageObject</span>
+<span class="kn">from</span> <span class="nn">parsers._pdfbaseparser</span> <span class="kn">import</span> <span class="n">_PDFBaseParser</span>
+
+
+<div class="viewcode-block" id="_PDFTextParser">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser">[docs]</a>
+<span class="k">class</span> <span class="nc">_PDFTextParser</span><span class="p">(</span><span class="n">_PDFBaseParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Private PDF document text parser intermediate class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): Full path to the PDF document.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        Extract text from a PDF file::</span>
+
+<span class="sd">            &gt;&gt;&gt; from docp import PDFParser</span>
+
+<span class="sd">            &gt;&gt;&gt; pdf = PDFParser(path=&#39;/path/to/myfile.pdf&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; pdf.extract_text()</span>
+
+<span class="sd">            # Access the content of page 1.</span>
+<span class="sd">            &gt;&gt;&gt; pg1 = pdf.doc.pages[1].content</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_PDFTextParser.extract_text">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser.extract_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="o">*</span><span class="p">,</span>
+                     <span class="n">remove_header</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">remove_footer</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">remove_newlines</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">ignore_tags</span><span class="p">:</span> <span class="nb">set</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">convert_to_ascii</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract text from the document.</span>
+
+<span class="sd">        If the PDF document contains &#39;marked content&#39; tags, these tags</span>
+<span class="sd">        are used to extract the text as this is a more accurate approach</span>
+<span class="sd">        and respects the structure of the page(s). Otherwise, a bounding</span>
+<span class="sd">        box method is used to extract the text. If instructed, the</span>
+<span class="sd">        header and/or footer regions can be excluded.</span>
+
+<span class="sd">        .. tip:</span>
+<span class="sd">            If a tag-based extract is used, the header/footer should be</span>
+<span class="sd">            automatically excluded as these will often have an &#39;Artifact&#39;</span>
+<span class="sd">            tag, which is excluded by default, by passing</span>
+<span class="sd">            ``ignore_tags=None``.</span>
+
+<span class="sd">            To *keep* the header and footer, pass ``ignore_tags=&#39;na&#39;``.</span>
+
+<span class="sd">        A list of pages, with extracted content can be accessed using</span>
+<span class="sd">        the :attr:`self.doc.pages` attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            remove_header (bool, optional): If True, the header is</span>
+<span class="sd">                cropped (skipped) from text extraction. This only applies</span>
+<span class="sd">                to the bounding box extraction method. Defaults to False.</span>
+<span class="sd">            remove_footer (bool, optional): If True, the footer is</span>
+<span class="sd">                cropped (skipped) from text extraction. This only applies</span>
+<span class="sd">                to the bounding box extraction method. Defaults to False.</span>
+<span class="sd">            remove_newlines (bool, optional): If True, the newline</span>
+<span class="sd">                characters are replaced with a space. Defaults to False.</span>
+<span class="sd">            ignore_tags (set, optional): If provided, these are the</span>
+<span class="sd">                PDF &#39;marked content&#39; tags which will be ignored. Note</span>
+<span class="sd">                that the PDF document must contain tags, otherwise the</span>
+<span class="sd">                bounding box method is used and this argument is ignored.</span>
+<span class="sd">                Defaults to ``{&#39;Artifact&#39;}``, as these generally</span>
+<span class="sd">                relate to a header and/or footer. To include all tags,</span>
+<span class="sd">                (not skip any) pass this argument as ``&#39;na&#39;``.</span>
+<span class="sd">            convert_to_ascii (bool, optional): When a non-ASCII character</span>
+<span class="sd">                is found, an attempt is made to convert it to an</span>
+<span class="sd">                associated ASCII character. If a character cannot be</span>
+<span class="sd">                converted, it is replaced with a ``&#39;?&#39;``.</span>
+<span class="sd">                Defaults to True.</span>
+
+<span class="sd">        :Keyword Args:</span>
+<span class="sd">            - None</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=unused-argument  # **kwargs</span>
+        <span class="c1"># pylint: disable=unnecessary-dunder-call</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Reinitialise the doc object and reopen the document.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+        <span class="c1"># If tags are found, these are used for text extraction. If tags</span>
+        <span class="c1"># are not found, a bounding box is used to remove the header and</span>
+        <span class="c1"># footer, if instructed.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uses_marked_content</span><span class="p">():</span>
+            <span class="k">match</span> <span class="n">ignore_tags</span><span class="p">:</span>
+                <span class="k">case</span> <span class="kc">None</span><span class="p">:</span> <span class="n">ignore_tags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Artifact&#39;</span><span class="p">}</span>
+                <span class="k">case</span> <span class="s1">&#39;na&#39;</span><span class="p">:</span> <span class="n">ignore_tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="c1"># Involves more processing, but also more accurate.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extract_text_using_tags</span><span class="p">(</span><span class="n">ignore_tags</span><span class="o">=</span><span class="n">ignore_tags</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="n">remove_newlines</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_crop_coordinates</span><span class="p">(</span><span class="n">skip_header</span><span class="o">=</span><span class="n">remove_header</span><span class="p">,</span> <span class="n">skip_footer</span><span class="o">=</span><span class="n">remove_footer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extract_text_using_bbox</span><span class="p">(</span><span class="n">bbox</span><span class="o">=</span><span class="n">bbox</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="n">remove_newlines</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">convert_to_ascii</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages</span><span class="p">:</span>
+                <span class="n">page</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">unidecode</span><span class="p">(</span><span class="n">string</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                                         <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span>
+                                         <span class="n">replace_str</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_PDFTextParser._extract_text_using_bbox">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser._extract_text_using_bbox">[docs]</a>
+    <span class="k">def</span> <span class="nf">_extract_text_using_bbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract text using a bbox for finding the header and footer.</span>
+
+<span class="sd">       :Keyword Arguments:</span>
+<span class="sd">            Those passed by the caller, :meth:`~extract_text`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">pages</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">within_bbox</span><span class="p">(</span><span class="n">bbox</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">extract_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;remove_newlines&#39;</span><span class="p">]:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PageObject</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">pageno</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">page_number</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">page</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_PDFTextParser._extract_text_using_tags">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser._extract_text_using_tags">[docs]</a>
+    <span class="k">def</span> <span class="nf">_extract_text_using_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract text using tags.</span>
+
+<span class="sd">        The tags defined by the ``ignore_tags`` are skipped.</span>
+
+<span class="sd">        :Keyword Arguments:</span>
+<span class="sd">            Those passed by the caller, :meth:`~extract_text`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=protected-access</span>
+        <span class="n">ignored</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ignore_tags&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">_tags</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Set the doc&#39;s &#39;parsed_using_tags&#39; flag.</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">pages</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text_from_tags</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="n">page</span><span class="p">,</span> <span class="n">ignored</span><span class="o">=</span><span class="n">ignored</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;remove_newlines&#39;</span><span class="p">]:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PageObject</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">pageno</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">page_number</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="n">page</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_PDFTextParser._text_from_tags">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser._text_from_tags">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_text_from_tags</span><span class="p">(</span><span class="n">page</span><span class="p">:</span> <span class="n">pdfplumber</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="n">ignored</span><span class="p">:</span> <span class="nb">set</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pylint: disable=undefined-variable  # noqa</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a page of text extracted from tags.</span>
+
+<span class="sd">        When extracting text from tags, newlines are not encoded and must</span>
+<span class="sd">        be derived. For each character on the page, the top and bottom</span>
+<span class="sd">        coordinates are compared to determine when a newline should be</span>
+<span class="sd">        inserted. If both the top and bottom of the current character</span>
+<span class="sd">        are greater than the previous character, a newline is inserted</span>
+<span class="sd">        into the text stream.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            page (pdfplumber.page.Page): Page to be parsed.</span>
+<span class="sd">            ignored (set): A set containing the tags to be ignored.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            str: Each character on the page, providing its tag is not to</span>
+<span class="sd">            be ignored. Or, a newline character if the current</span>
+<span class="sd">            character&#39;s coordinates are greater than (lower on the page)</span>
+<span class="sd">            than the previous character.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">chars</span><span class="p">:</span>
+            <span class="c1"># Micro-optimisation: Push tag filtering down to the C-level.</span>
+            <span class="n">chars</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignored</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">chars</span><span class="p">)</span>
+            <span class="n">top</span><span class="p">,</span> <span class="n">btm</span> <span class="o">=</span> <span class="mi">999</span><span class="p">,</span> <span class="mi">999</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">chars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">top</span> <span class="o">&lt;</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">btm</span> <span class="o">&lt;</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]:</span>
+                    <span class="k">yield</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="k">yield</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span>
+                <span class="n">top</span><span class="p">,</span> <span class="n">btm</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="s1">&#39;&#39;</span></div>
+
+
+<div class="viewcode-block" id="_PDFTextParser._uses_marked_content">
+<a class="viewcode-back" href="../../../parsers__pdftextparser.html#docp.parsers._pdftextparser._PDFTextParser._uses_marked_content">[docs]</a>
+    <span class="k">def</span> <span class="nf">_uses_marked_content</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test whether the document can be parsed using tags.</span>
+
+<span class="sd">        Marked content allows us to parse the PDF using tags (rather than</span>
+<span class="sd">        OCR) which is more accurate not only in terms of character</span>
+<span class="sd">        recognition, but also with regard to the structure of the text on</span>
+<span class="sd">        a page.</span>
+
+<span class="sd">        :Logic:</span>
+<span class="sd">            If the document&#39;s catalog shows ``Marked: True``, then</span>
+<span class="sd">            ``True`` is returned immediately.</span>
+
+<span class="sd">            Otherwise, a second attempt is made which detects marked</span>
+<span class="sd">            content tags on the first three pages. If no tags are found,</span>
+<span class="sd">            a third attempt is made by searching the first 10 pages. If</span>
+<span class="sd">            tags are found during either of these attempts, ``True`` is</span>
+<span class="sd">            returned immediately.</span>
+
+<span class="sd">            Finally, if no marked content or tags were found, ``False``</span>
+<span class="sd">            is returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Returns True if the document can be parsed using marked</span>
+<span class="sd">            content tags, otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use pdfminer.six to get the document&#39;s catalog.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">catalog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MarkInfo&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Marked&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Check only first three pages for tags first, if found, get out.</span>
+        <span class="c1"># If not, retry with the first 10 pages.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">pages</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">chars</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tags</span> <span class="o">!=</span> <span class="p">{</span><span class="kc">None</span><span class="p">}:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,17 +8,22 @@
 :Developer: J Berendt
 :Email:     development@s3dev.uk
 
-Note:       This module is *not* designed to be interacted with
+.. attention::
+
+            This module is *not* designed to be interacted with
             directly, only via the appropriate interface class(es).
 
             Rather, please create an instance of a PDF document parsing
             object using the following:
 
-                - :class:`pdfparser.PDFParser`
+                - :class:`~docp.parsers.pdfparser.PDFParser`
 
-Note:       **Multi-processing:**
+.. note::
+
+            **Multi-processing**
+
             Text extraction through multi-processing has been tested and
-            is not feesible due to an error indicating
+            is not feasible due to an error indicating
             the ``pdfplumber.page.Page`` object can not be pickled. This
             object was being passed into the extraction method as the
             object contains the :func:`extract_text` function.
@@ -35,17 +40,17 @@ Note:       **Multi-processing:**
             It has therefore been determined that this module will remain
             single-threaded.
 
-           **Multi-Thread Timings**
+            **Multi-Thread Timings**
 
-           **Single-threaded:**
+                - **Single-threaded:**
 
-                - 14 page document: ~2 seconds
-                - 92 page document: ~32 seconds
+                  - 14 page document: ~2 seconds
+                  - 92 page document: ~32 seconds
 
-           **Multi-threaded:**
+                - **Multi-threaded:**
 
-                - 14 page document: ~2 seconds
-                - 92 page document: ~35 seconds
+                  - 14 page document: ~2 seconds
+                  - 92 page document: ~35 seconds
 
 """
 # pylint: disable=import-error
@@ -83,7 +88,8 @@ class _PDFTextParser(_PDFBaseParser):
                      remove_footer: bool=False,
                      remove_newlines: bool=False,
                      ignore_tags: set=None,
-                     convert_to_ascii: bool=True):
+                     convert_to_ascii: bool=True,
+                     **kwargs):
         """Extract text from the document.
 
         If the PDF document contains 'marked content' tags, these tags
@@ -125,10 +131,14 @@ class _PDFTextParser(_PDFBaseParser):
                 converted, it is replaced with a ``'?'``.
                 Defaults to True.
 
+        :Keyword Args:
+            - None
+
         Returns:
             None.
 
         """
+        # pylint: disable=unused-argument  # **kwargs
         # pylint: disable=unnecessary-dunder-call
         if len(self.doc.pages) > 1:
             # Reinitialise the doc object and reopen the document.
@@ -216,7 +226,7 @@ class _PDFTextParser(_PDFBaseParser):
         yield ''
 
     def _uses_marked_content(self) -> bool:
-        """Test wether the document can be parsed using tags.
+        """Test whether the document can be parsed using tags.
 
         Marked content allows us to parse the PDF using tags (rather than
         OCR) which is more accurate not only in terms of character

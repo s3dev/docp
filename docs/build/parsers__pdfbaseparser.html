@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base (Private) Module: parsers/_pdfbaseparser.py &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1be0d999"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Base (Private) Module: parsers/_pdftableparser.py" href="parsers__pdftableparser.html" />
+    <link rel="prev" title="Base (Private) Module: objects/_textobject.py" href="objects__textobject.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            docp
+              <img src="_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library.html">Library API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library.html#use-cases">Use Cases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library.html#module-documentation">Module Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dbs_chroma.html">Module: dbs/chroma.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="libs_utilities.html">Module: libs/utilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapdfloader.html">Module: loaders/chromapdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapptxloader.html">Module: loaders/chromapptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_lutilities.html">Module: loaders/lutilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pdfobject.html">Module: objects/pdfobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pptxobject.html">Module: objects/pptxobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pdfparser.html">Module: parsers/pdfparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pptxparser.html">Module: parsers/pptxparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_putilities.html">Module: parsers/putilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabaseloader.html">Base (Private) Module: loaders/_chromabaseloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepdfloader.html">Base (Private) Module: loaders/_chromabasepdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepptxloader.html">Base (Private) Module: loaders/_chromabasepptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__docbaseobject.html">Base (Private) Module: objects/_docbaseobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__pageobject.html">Base (Private) Module: objects/_pageobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__slideobject.html">Base (Private) Module: objects/_slideobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__textobject.html">Base (Private) Module: objects/_textobject.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Base (Private) Module: parsers/_pdfbaseparser.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#docp.parsers._pdfbaseparser._PDFBaseParser"><code class="docutils literal notranslate"><span class="pre">_PDFBaseParser</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftableparser.html">Base (Private) Module: parsers/_pdftableparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftextparser.html">Base (Private) Module: parsers/_pdftextparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxbaseparser.html">Base (Private) Module: parsers/_pptxbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxtextparser.html">Base (Private) Module: parsers/_pptxtextparser.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library.html">Library API Documentation</a></li>
+      <li class="breadcrumb-item active">Base (Private) Module: parsers/_pdfbaseparser.py</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-docp.parsers._pdfbaseparser">
+<span id="base-private-module-parsers-pdfbaseparser-py"></span><h1>Base (Private) Module: parsers/_pdfbaseparser.py<a class="headerlink" href="#module-docp.parsers._pdfbaseparser" title="Link to this heading"></a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This module provides generalised base functionality for
+parsing PDF documents.</p>
+</dd>
+<dt class="field-even">Platform<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linux/Windows | Python 3.10+</p>
+</dd>
+<dt class="field-odd">Developer<span class="colon">:</span></dt>
+<dd class="field-odd"><p>J Berendt</p>
+</dd>
+<dt class="field-even">Email<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="mailto:development&#37;&#52;&#48;s3dev&#46;uk">development<span>&#64;</span>s3dev<span>&#46;</span>uk</a></p>
+</dd>
+<dt class="field-odd">Comments<span class="colon">:</span></dt>
+<dd class="field-odd"><p>n/a</p>
+</dd>
+</dl>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This module is <em>not</em> designed to be interacted with
+directly, only via the appropriate interface class(es).</p>
+<p>Rather, please create an instance of a PDF document parsing
+object using the following class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="parsers_pdfparser.html#docp.parsers.pdfparser.PDFParser" title="docp.parsers.pdfparser.PDFParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">PDFParser</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_PDFBaseParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class containing generalised PDF parsing functionality.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser.doc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">doc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="objects_pdfobject.html#docp.objects.pdfobject.DocPDF" title="docp.objects.pdfobject.DocPDF"><span class="pre">DocPDF</span></a></em><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser.doc" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the document object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser._get_crop_coordinates">
+<span class="sig-name descname"><span class="pre">_get_crop_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_header</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_footer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser._get_crop_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser._get_crop_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Determine the bounding box coordinates.</p>
+<p>These coordinates are used for removing the header and/or footer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_header</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, set the coordinates
+such that the header is skipped. Defaults to False.</p></li>
+<li><p><strong>skip_footer</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, set the coordinates
+such that the footer is skipped. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Logic<span class="colon">:</span></dt>
+<dd class="field-even"><p>When excluding a header and/or footer, the following page
+numbers are used for header/footer <em>position</em> detection,
+given the length of the document:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Number of pages [1]: 1</p></li>
+<li><p>Number of pages [2,10]: 2</p></li>
+<li><p>Number of pages [11,]: 5</p></li>
+</ul>
+</div></blockquote>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A bounding box tuple of the following form, to be
+passed directly into the <code class="xref py py-func docutils literal notranslate"><span class="pre">Page.crop()</span></code> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser._open">
+<span class="sig-name descname"><span class="pre">_open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser._open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser._open" title="Link to this definition"></a></dt>
+<dd><p>Open the PDF document for reading.</p>
+<p>Before opening the file, a test is performed to ensure the PDF
+is valid. The file must:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>exist</p></li>
+<li><p>be a valid PDF file, per the file signature</p></li>
+<li><p>have a .pdf file extension</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Other Operations<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>Store the <code class="docutils literal notranslate"><span class="pre">pdfplumber</span></code> parser object returned from the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">pdfplumber.open()</span></code> function into the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">self._doc._parser</span></code> attribute.</p></li>
+<li><p>Store the number of pages into the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">self._doc._npages</span></code> attribute.</p></li>
+<li><p>Store the document’s meta data into the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">self._doc._meta</span></code> attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the file type criteria above are not</p></li>
+<li><p><strong>met.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser._prepare_row">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_prepare_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser._prepare_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser._prepare_row" title="Link to this definition"></a></dt>
+<dd><p>Prepare the table row for writing a table to to CSV.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<em>list</em>) – A list of strings, constituting a table row.</p>
+</dd>
+<dt class="field-even">Processing Tasks<span class="colon">:</span></dt>
+<dd class="field-even"><p>For each element in the row:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Remove any double quote characters (ASCII and Unicode).</p></li>
+<li><p>Replace any empty values with <code class="docutils literal notranslate"><span class="pre">'None'</span></code>.</p></li>
+<li><p>If the element contains a comma, wrap the element in
+double quotes.</p></li>
+<li><p>Attempt to convert any non-ASCII characters to an
+associated ASCII character. If the replacement cannot
+be made, the character is replaced with a <code class="docutils literal notranslate"><span class="pre">'?'</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A processed comma-separated string, ready to be written
+to a CSV file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser._scan_common">
+<span class="sig-name descname"><span class="pre">_scan_common</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser._scan_common"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser._scan_common" title="Link to this definition"></a></dt>
+<dd><p>Scan the PDF document to find the most common lines.</p>
+<dl class="field-list">
+<dt class="field-odd">Rationale<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Generally, the most common lines in a document will be the
+header and footer, as these are expected to be repeated on
+each page of the document.</p>
+<p>‘Most common’ is defined as line occurring on 90% of the
+pages throughout the document. Therefore, only documents with
+more than three pages are scanned. Otherwise, the 90% may
+exclude relevant pieces of the document (as was discovered in
+testing).</p>
+</dd>
+<dt class="field-even">Logic<span class="colon">:</span></dt>
+<dd class="field-even"><p>For documents with more than three pages, the entire PDF is
+read through and each line extracted. The occurrence of each
+line is counted, with the most common occurrences returned
+to the caller.</p>
+<p>The returned lines are to be passed into a page search to
+determine the x/y coordinates of the header and footer.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>For documents with more than three pages, a list
+containing the most common lines in the document. Otherwise,
+an empty list if returned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.parsers._pdfbaseparser._PDFBaseParser._set_paths">
+<span class="sig-name descname"><span class="pre">_set_paths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/docp/parsers/_pdfbaseparser.html#_PDFBaseParser._set_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.parsers._pdfbaseparser._PDFBaseParser._set_paths" title="Link to this definition"></a></dt>
+<dd><p>Set the document’s file path attributes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="objects__textobject.html" class="btn btn-neutral float-left" title="Base (Private) Module: objects/_textobject.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parsers__pdftableparser.html" class="btn btn-neutral float-right" title="Base (Private) Module: parsers/_pdftableparser.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

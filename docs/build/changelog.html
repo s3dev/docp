@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Change Log &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1be0d999"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contact Us" href="contact.html" />
+    <link rel="prev" title="Base (Private) Module: parsers/_pptxtextparser.py" href="parsers__pptxtextparser.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            docp
+              <img src="_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Change Log</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-docp.libs.changelog">
+<span id="change-log"></span><h1>Change Log<a class="headerlink" href="#module-docp.libs.changelog" title="Link to this heading"></a></h1>
+<ul>
+<li><p><strong>0.2.0 - Addition of the PPTX parser and loader.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-24 14:41:54</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">New</span> <span class="n">features</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">A</span> <span class="n">PPTX</span> <span class="p">(</span><span class="n">MS</span> <span class="n">PowerPoint</span><span class="p">)</span> <span class="n">document</span> <span class="n">parser</span> <span class="ow">and</span> <span class="n">loader</span> <span class="n">has</span> <span class="n">been</span> <span class="n">added</span><span class="o">.</span>
+
+<span class="n">Changes</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">The</span> <span class="n">chromadb</span> <span class="n">loader</span> <span class="n">has</span> <span class="n">been</span> <span class="n">re</span><span class="o">-</span><span class="n">configured</span> <span class="ow">and</span> <span class="n">re</span><span class="o">-</span><span class="n">built</span> <span class="n">to</span> <span class="n">support</span> <span class="n">PDF</span>
+  <span class="ow">and</span> <span class="n">PPTX</span> <span class="n">loading</span><span class="o">.</span> <span class="o">*</span><span class="n">This</span> <span class="n">will</span> <span class="k">break</span> <span class="n">backwards</span> <span class="n">compatibility</span><span class="o">*</span>
+<span class="o">-</span> <span class="n">Some</span> <span class="n">lower</span><span class="o">-</span><span class="n">level</span> <span class="n">utilities</span> <span class="n">have</span> <span class="n">been</span> <span class="n">moved</span> <span class="n">to</span> <span class="n">the</span> <span class="n">libs</span><span class="o">/</span><span class="n">utilities</span> <span class="n">module</span><span class="o">.</span>
+
+<span class="n">Dependency</span> <span class="n">requirements</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Updated</span> <span class="n">the</span> <span class="n">installation</span> <span class="n">requirements</span> <span class="n">to</span> <span class="n">loosen</span> <span class="n">the</span> <span class="n">install</span> <span class="n">burden</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">For</span> <span class="n">example</span><span class="p">,</span> <span class="n">the</span> <span class="n">PPTX</span> <span class="n">parser</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">need</span> <span class="n">the</span> <span class="n">PDF</span> <span class="n">parser</span><span class="s1">&#39;s supporting</span>
+    <span class="n">libraries</span> <span class="n">are</span> <span class="ow">not</span> <span class="ow">and</span> <span class="n">visa</span><span class="o">-</span><span class="n">versa</span><span class="o">.</span> <span class="n">The</span> <span class="n">parser</span><span class="o">-</span><span class="n">specific</span> <span class="n">libraries</span> <span class="n">can</span> <span class="n">be</span>
+    <span class="n">installed</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span> <span class="n">on</span> <span class="n">use</span><span class="o">.</span>
+<span class="o">-</span> <span class="n">A</span> <span class="n">user</span><span class="o">-</span><span class="n">friendly</span> <span class="n">message</span> <span class="n">has</span> <span class="n">been</span> <span class="n">added</span> <span class="k">if</span> <span class="n">a</span> <span class="n">parser</span> <span class="ow">is</span> <span class="n">imported</span> <span class="n">where</span>
+  <span class="n">the</span> <span class="n">supporting</span> <span class="n">libraries</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">yet</span> <span class="n">installed</span><span class="o">.</span>
+
+<span class="n">Fixes</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">The</span> <span class="n">chroma</span> <span class="n">Document</span> <span class="nb">object</span> <span class="n">creation</span> <span class="n">has</span> <span class="n">been</span> <span class="n">updated</span> <span class="n">to</span> <span class="n">only</span> <span class="n">add</span> <span class="n">unique</span>
+  <span class="n">documents</span><span class="p">,</span> <span class="n">addressing</span> <span class="n">the</span> <span class="n">issue</span> <span class="n">of</span> <span class="n">duplicated</span> <span class="n">documents</span> <span class="n">causing</span> <span class="n">the</span>
+  <span class="n">loader</span> <span class="n">to</span> <span class="n">fall</span> <span class="n">over</span><span class="o">.</span>
+
+<span class="n">Documentation</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">The</span> <span class="n">documentation</span> <span class="n">suite</span> <span class="n">has</span> <span class="n">been</span> <span class="n">added</span><span class="o">.</span>
+
+<span class="n">Released</span><span class="p">:</span> <span class="mi">2025</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">12</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>0.1.0b1 - Beta release for version 0.1.0.dev1.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-16 15:48:51</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Released</span><span class="p">:</span> <span class="mi">2025</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">16</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>0.1.0.dev3 - Enable Chroma embedding to function offline.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-16 09:49:34</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Chroma</span> <span class="n">database</span> <span class="n">interface</span> <span class="ow">and</span> <span class="n">loader</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">Updated</span> <span class="n">the</span> <span class="n">Chroma</span> <span class="n">interface</span> <span class="n">to</span> <span class="n">have</span> <span class="n">an</span> <span class="s1">&#39;offline&#39;</span> <span class="n">mode</span> <span class="n">which</span> <span class="n">uses</span> <span class="n">the</span>
+  <span class="n">local</span> <span class="n">cache</span> <span class="n">directory</span> <span class="ow">and</span> <span class="n">cached</span> <span class="n">embedding</span> <span class="n">function</span> <span class="n">model</span><span class="p">,</span> <span class="n">rather</span> <span class="n">than</span>
+  <span class="n">going</span> <span class="n">online</span> <span class="n">to</span> <span class="n">download</span> <span class="n">one</span><span class="o">.</span>
+
+<span class="n">Released</span><span class="p">:</span> <span class="n">n</span><span class="o">/</span><span class="n">a</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>0.1.0.dev2 - Loader updated to accept a model for keyword derivation.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-14 10:05:32</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Released</span><span class="p">:</span> <span class="n">n</span><span class="o">/</span><span class="n">a</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>0.1.0.dev1 - Refactored document objects and Chroma loading.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-08 13:15:54</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Released</span><span class="p">:</span> <span class="n">n</span><span class="o">/</span><span class="n">a</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>0.0.0.dev1 - Initial commit of refactored docutils (v0.1.0.dev1) as docp.</strong><span> by </span><em>j_berendt</em><span> at </span><em>2025-01-06 15:45:28</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Background</span><span class="p">:</span>
+<span class="n">The</span> <span class="n">docutils</span> <span class="n">project</span> <span class="n">unknowingly</span> <span class="n">already</span> <span class="n">existed</span> <span class="n">at</span> <span class="n">the</span> <span class="n">time</span> <span class="n">this</span> <span class="n">project</span>
+<span class="n">was</span> <span class="n">created</span><span class="o">.</span> <span class="n">This</span> <span class="n">commit</span> <span class="n">includes</span> <span class="n">the</span> <span class="n">preliminary</span> <span class="n">package</span> <span class="n">metadata</span> <span class="n">edits</span>
+<span class="n">to</span> <span class="n">transfer</span> <span class="o">*</span><span class="n">this</span><span class="o">*</span> <span class="n">docutils</span> <span class="n">project</span> <span class="n">to</span> <span class="n">the</span> <span class="n">docp</span><span class="p">(</span><span class="n">arser</span><span class="p">)</span> <span class="n">project</span><span class="o">.</span>
+
+<span class="n">No</span> <span class="n">source</span> <span class="n">code</span> <span class="n">changes</span> <span class="n">have</span> <span class="n">been</span> <span class="n">made</span> <span class="n">at</span> <span class="n">this</span> <span class="n">time</span><span class="o">.</span> <span class="n">Those</span> <span class="n">will</span> <span class="n">be</span> <span class="n">made</span>
+<span class="ow">in</span> <span class="n">v0</span><span class="mf">.1.0</span><span class="o">.</span><span class="n">dev1</span> <span class="ow">or</span> <span class="n">this</span> <span class="n">docp</span> <span class="n">project</span><span class="o">.</span>
+
+<span class="n">Released</span><span class="p">:</span> <span class="n">n</span><span class="o">/</span><span class="n">a</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parsers__pptxtextparser.html" class="btn btn-neutral float-left" title="Base (Private) Module: parsers/_pptxtextparser.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contact.html" class="btn btn-neutral float-right" title="Contact Us" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module: loaders/chromapptxloader.py &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1be0d999"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module: loaders/lutilities.py" href="loaders_lutilities.html" />
+    <link rel="prev" title="Module: loaders/chromapdfloader.py" href="loaders_chromapdfloader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            docp
+              <img src="_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library.html">Library API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library.html#use-cases">Use Cases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library.html#module-documentation">Module Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dbs_chroma.html">Module: dbs/chroma.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="libs_utilities.html">Module: libs/utilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapdfloader.html">Module: loaders/chromapdfloader.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Module: loaders/chromapptxloader.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader"><code class="docutils literal notranslate"><span class="pre">ChromaPPTXLoader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_lutilities.html">Module: loaders/lutilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pdfobject.html">Module: objects/pdfobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pptxobject.html">Module: objects/pptxobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pdfparser.html">Module: parsers/pdfparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pptxparser.html">Module: parsers/pptxparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_putilities.html">Module: parsers/putilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabaseloader.html">Base (Private) Module: loaders/_chromabaseloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepdfloader.html">Base (Private) Module: loaders/_chromabasepdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepptxloader.html">Base (Private) Module: loaders/_chromabasepptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__docbaseobject.html">Base (Private) Module: objects/_docbaseobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__pageobject.html">Base (Private) Module: objects/_pageobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__slideobject.html">Base (Private) Module: objects/_slideobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__textobject.html">Base (Private) Module: objects/_textobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdfbaseparser.html">Base (Private) Module: parsers/_pdfbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftableparser.html">Base (Private) Module: parsers/_pdftableparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftextparser.html">Base (Private) Module: parsers/_pdftextparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxbaseparser.html">Base (Private) Module: parsers/_pptxbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxtextparser.html">Base (Private) Module: parsers/_pptxtextparser.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library.html">Library API Documentation</a></li>
+      <li class="breadcrumb-item active">Module: loaders/chromapptxloader.py</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-docp.loaders.chromapptxloader">
+<span id="module-loaders-chromapptxloader-py"></span><span id="module-loaders-chromapptxloader"></span><h1>Module: loaders/chromapptxloader.py<a class="headerlink" href="#module-docp.loaders.chromapptxloader" title="Link to this heading"></a></h1>
+<dl class="field-list">
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This module provides the entry point for loading PPTX files
+into a Chroma database.</p>
+</dd>
+<dt class="field-even">Platform<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linux/Windows | Python 3.10+</p>
+</dd>
+<dt class="field-odd">Developer<span class="colon">:</span></dt>
+<dd class="field-odd"><p>J Berendt</p>
+</dd>
+<dt class="field-even">Email<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="mailto:development&#37;&#52;&#48;s3dev&#46;uk">development<span>&#64;</span>s3dev<span>&#46;</span>uk</a></p>
+</dd>
+<dt class="field-odd">Comments<span class="colon">:</span></dt>
+<dd class="field-odd"><p>n/a</p>
+</dd>
+<dt class="field-even">Examples<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parse and load a <em>single</em> PPTX file into a Chroma database
+collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp.loaders</span> <span class="kn">import</span> <span class="n">ChromaPPTXLoader</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">ChromaPPTXLoader</span><span class="p">(</span><span class="n">dbpath</span><span class="o">=</span><span class="s1">&#39;/path/to/chroma&#39;</span><span class="p">,</span>
+<span class="go">                         collection=&#39;spam&#39;,</span>
+<span class="go">                         split_text=False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/directory/myfile.pptx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parse and load a <em>directory</em> of PPTX files into a Chroma database
+collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp.loaders</span> <span class="kn">import</span> <span class="n">ChromaPPTXLoader</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">ChromaPPTXLoader</span><span class="p">(</span><span class="n">dbpath</span><span class="o">=</span><span class="s1">&#39;/path/to/chroma&#39;</span><span class="p">,</span>
+<span class="go">                         collection=&#39;spam&#39;,</span>
+<span class="go">                         split_text=False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/directory&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pptx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For further example code use, please refer to the
+<a class="reference internal" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader" title="docp.loaders.chromapptxloader.ChromaPPTXLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChromaPPTXLoader</span></code></a> class docstring.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="docp.loaders.chromapptxloader.ChromaPPTXLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ChromaPPTXLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="dbs_chroma.html#docp.dbs.chroma.ChromaDB" title="docp.dbs.chroma.ChromaDB"><span class="pre">ChromaDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_keywords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/loaders/chromapptxloader.html#ChromaPPTXLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ChromaBasePPTXLoader</span></code></p>
+<p>Chroma database PPTX-specific document loader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em><em> | </em><a class="reference internal" href="dbs_chroma.html#docp.dbs.chroma.ChromaDB" title="docp.dbs.chroma.ChromaDB"><em>ChromaDB</em></a>) – Either the full path to the Chroma
+database <em>directory</em>, or an instance of a
+<a class="reference internal" href="dbs_chroma.html#docp.dbs.chroma.ChromaDB" title="docp.dbs.chroma.ChromaDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChromaDB</span></code></a> class. If the instance is
+passed, the <code class="docutils literal notranslate"><span class="pre">collection</span></code> argument is ignored.</p></li>
+<li><p><strong>collection</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the Chroma database
+collection. Only required if the <code class="docutils literal notranslate"><span class="pre">db</span></code> parameter is a path.
+Defaults to None.</p></li>
+<li><p><strong>split_text</strong> (<em>bool</em><em>, </em><em>optional</em>) – Split the document into chunks,
+before loading it into the database. Defaults to True.</p></li>
+<li><p><strong>load_keywords</strong> (<em>bool</em><em>, </em><em>optional</em>) – Derive keywords from the document
+and load these into the sister keywords collection.
+Defaults to False.</p></li>
+<li><p><strong>llm</strong> (<em>object</em><em>, </em><em>optional</em>) – If deriving keywords, this is the LLM
+which will do the derivation. Defaults to None.</p></li>
+<li><p><strong>offline</strong> (<em>bool</em><em>, </em><em>optional</em>) – Remain offline and use the locally
+cached embedding function model. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <em>deriving and loading of keywords</em> is only recommended for
+<strong>GPU-bound processing</strong>, as the LLM is invoked to infer the
+keywords for each given document.</p>
+<p>If called on a ‘standard’ PC, this will take a <em>long</em> time to
+complete, if it completes at all.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is recommended to pass <code class="docutils literal notranslate"><span class="pre">split_text=False</span></code> into the
+<a class="reference internal" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader" title="docp.loaders.chromapptxloader.ChromaPPTXLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChromaPPTXLoader</span></code></a> constructor.</p>
+<p>Often, PowerPoint presentations are structured such that related
+text is found in the same ‘shape’ (textbox) on a slide.
+Splitting the text in these shapes may have undesired results.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Examples<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parse and load a <em>single</em> PPTX file into a Chroma database
+collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp.loaders</span> <span class="kn">import</span> <span class="n">ChromaPPTXLoader</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">ChromaPPTXLoader</span><span class="p">(</span><span class="n">dbpath</span><span class="o">=</span><span class="s1">&#39;/path/to/chroma&#39;</span><span class="p">,</span>
+<span class="go">                         collection=&#39;spam&#39;,</span>
+<span class="go">                         split_text=False)  # &lt;-- Note this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/directory/myfile.pptx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parse and load a <em>directory</em> of PPTX files into a Chroma database
+collection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp.loaders</span> <span class="kn">import</span> <span class="n">ChromaPPTXLoader</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">ChromaPPTXLoader</span><span class="p">(</span><span class="n">dbpath</span><span class="o">=</span><span class="s1">&#39;/path/to/chroma&#39;</span><span class="p">,</span>
+<span class="go">                         collection=&#39;spam&#39;,</span>
+<span class="go">                         split_text=False)  # &lt;-- Note this</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/directory&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pptx&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.loaders.chromapptxloader.ChromaPPTXLoader.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'**'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_newlines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_to_ascii</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">unused</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/docp/loaders/chromapptxloader.html#ChromaPPTXLoader.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader.load" title="Link to this definition"></a></dt>
+<dd><p>Load a PDF file (or files) into a Chroma database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Full path to the file (or <em>directory</em>) to be
+parsed and loaded. Note: If this is a directory, a
+specific file extension can be passed into the
+<a class="reference internal" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader.load" title="docp.loaders.chromapptxloader.ChromaPPTXLoader.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method using the <code class="docutils literal notranslate"><span class="pre">ext</span></code> argument.</p></li>
+<li><p><strong>ext</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>If the <code class="docutils literal notranslate"><span class="pre">path</span></code> argument refers to a
+<em>directory</em>, a specific file extension can be specified
+here. For example: <code class="docutils literal notranslate"><span class="pre">ext</span> <span class="pre">=</span> <span class="pre">'pptx'</span></code>.</p>
+<p>If anything other than <code class="docutils literal notranslate"><span class="pre">'**'</span></code> is provided, all
+alpha-characters are parsed from the string, and prefixed
+with <code class="docutils literal notranslate"><span class="pre">*.</span></code>. Meaning, if <code class="docutils literal notranslate"><span class="pre">'.pptx'</span></code> is passed, the
+characters <code class="docutils literal notranslate"><span class="pre">'pptx'</span></code> are parsed and prefixed with <code class="docutils literal notranslate"><span class="pre">*.</span></code>
+to create <code class="docutils literal notranslate"><span class="pre">'*.pptx'</span></code>. However, if <code class="docutils literal notranslate"><span class="pre">'things.foo'</span></code> is
+passed, the derived extension will be <code class="docutils literal notranslate"><span class="pre">'*.thingsfoo'</span></code>.
+Defaults to ‘**’, for a recursive search.</p>
+</p></li>
+<li><p><strong>recursive</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, subdirectories are
+searched. Defaults to True.</p></li>
+<li><p><strong>remove_newlines</strong> (<em>bool</em><em>, </em><em>optional</em>) – Replace newline characters
+with a space. Defaults to True, as this helps with
+document chunk splitting.</p></li>
+<li><p><strong>convert_to_ascii</strong> (<em>bool</em><em>, </em><em>optional</em>) – Convert all characters to
+ASCII. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Args<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>unused (dict): This enables keywords such as <code class="docutils literal notranslate"><span class="pre">remove_header</span></code></dt><dd><p>and <code class="docutils literal notranslate"><span class="pre">remove_footer</span></code> (for example) to be passed into a
+loader-agnostic <code class="docutils literal notranslate"><span class="pre">.load()</span></code> function without raising a
+‘unexpected keyword argument` <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.loaders.chromapptxloader.ChromaPPTXLoader._set_kwargs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_set_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locals_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/docp/loaders/chromapptxloader.html#ChromaPPTXLoader._set_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader._set_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Prepare the arguments which are sent to the doc parser.</p>
+<p>As <code class="xref py py-func docutils literal notranslate"><span class="pre">locals()</span></code> is used to capture the <a class="reference internal" href="#docp.loaders.chromapptxloader.ChromaPPTXLoader.load" title="docp.loaders.chromapptxloader.ChromaPPTXLoader.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a> method’s
+arguments for passing into the doc parser, some argument must be
+removed first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>locals_</strong> (<em>dict</em>) – The return value from a <code class="xref py py-func docutils literal notranslate"><span class="pre">locals()</span></code> call.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <em>copy</em> of the provided dictionary with specific
+key/value pairs removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="loaders_chromapdfloader.html" class="btn btn-neutral float-left" title="Module: loaders/chromapdfloader.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="loaders_lutilities.html" class="btn btn-neutral float-right" title="Module: loaders/lutilities.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

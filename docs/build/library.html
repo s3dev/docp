@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library API Documentation &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1be0d999"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module: dbs/chroma.py" href="dbs_chroma.html" />
+    <link rel="prev" title="docp Library Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            docp
+              <img src="_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Library API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#use-cases">Use Cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#extract-text-from-a-pdf-file">Extract text from a PDF file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extract-text-from-a-powerpoint-presentation">Extract text from a PowerPoint presentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-documentation">Module Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbs_chroma.html">Module: dbs/chroma.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="libs_utilities.html">Module: libs/utilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapdfloader.html">Module: loaders/chromapdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapptxloader.html">Module: loaders/chromapptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_lutilities.html">Module: loaders/lutilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pdfobject.html">Module: objects/pdfobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pptxobject.html">Module: objects/pptxobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pdfparser.html">Module: parsers/pdfparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pptxparser.html">Module: parsers/pptxparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_putilities.html">Module: parsers/putilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabaseloader.html">Base (Private) Module: loaders/_chromabaseloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepdfloader.html">Base (Private) Module: loaders/_chromabasepdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepptxloader.html">Base (Private) Module: loaders/_chromabasepptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__docbaseobject.html">Base (Private) Module: objects/_docbaseobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__pageobject.html">Base (Private) Module: objects/_pageobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__slideobject.html">Base (Private) Module: objects/_slideobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__textobject.html">Base (Private) Module: objects/_textobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdfbaseparser.html">Base (Private) Module: parsers/_pdfbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftableparser.html">Base (Private) Module: parsers/_pdftableparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftextparser.html">Base (Private) Module: parsers/_pdftextparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxbaseparser.html">Base (Private) Module: parsers/_pptxbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxtextparser.html">Base (Private) Module: parsers/_pptxtextparser.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Library API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="library-api-documentation">
+<span id="library-api"></span><h1>Library API Documentation<a class="headerlink" href="#library-api-documentation" title="Link to this heading"></a></h1>
+<p>The page contains simple library usage examples and the module-level
+documentation for each of the importable modules in <code class="docutils literal notranslate"><span class="pre">docp</span></code>.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#use-cases" id="id1">Use Cases</a></p></li>
+<li><p><a class="reference internal" href="#module-documentation" id="id2">Module Documentation</a></p></li>
+</ul>
+</nav>
+<section id="use-cases">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Use Cases</a><a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<p>To save digging through the documentation for each module and cobbling
+together what a ‘standard use case’ may look like, a couple have been
+provided here.</p>
+<section id="extract-text-from-a-pdf-file">
+<h3>Extract text from a PDF file<a class="headerlink" href="#extract-text-from-a-pdf-file" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp</span> <span class="kn">import</span> <span class="n">PDFParser</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pdf</span> <span class="o">=</span> <span class="n">PDFParser</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/myfile.pdf&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pdf</span><span class="o">.</span><span class="n">extract_text</span><span class="p">()</span>
+
+<span class="go"># Access the content of page 1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pg1</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
+</pre></div>
+</div>
+</section>
+<section id="extract-text-from-a-powerpoint-presentation">
+<h3>Extract text from a PowerPoint presentation<a class="headerlink" href="#extract-text-from-a-powerpoint-presentation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">docp</span> <span class="kn">import</span> <span class="n">PPTXParser</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pptx</span> <span class="o">=</span> <span class="n">PPTXParser</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;/path/to/myfile.pptx&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pptx</span><span class="o">.</span><span class="n">extract_text</span><span class="p">()</span>
+
+<span class="go"># Access the text on slide 1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pg1</span> <span class="o">=</span> <span class="n">pptx</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">slides</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="module-documentation">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Module Documentation</a><a class="headerlink" href="#module-documentation" title="Link to this heading"></a></h2>
+<p>In addition to the module-level documentation, most of the public
+classes and/or methods come with one or more usage examples and access
+to the source code itself.</p>
+<p>There are two type of modules listed here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Those whose API is designed to be accessed by the user/caller</p></li>
+<li><p>Those which are designated ‘private’ and designed only for internal
+use</p></li>
+</ul>
+</div></blockquote>
+<p>We’ve exposed both here for completeness and to aid in understanding how
+the library is implemented.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Links to module-level documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dbs_chroma.html">Module: dbs/chroma.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libs_utilities.html">Module: libs/utilities.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders_chromapdfloader.html">Module: loaders/chromapdfloader.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders_chromapptxloader.html">Module: loaders/chromapptxloader.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders_lutilities.html">Module: loaders/lutilities.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects_pdfobject.html">Module: objects/pdfobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects_pptxobject.html">Module: objects/pptxobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers_pdfparser.html">Module: parsers/pdfparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers_pptxparser.html">Module: parsers/pptxparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers_putilities.html">Module: parsers/putilities.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders__chromabaseloader.html">Base (Private) Module: loaders/_chromabaseloader.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders__chromabasepdfloader.html">Base (Private) Module: loaders/_chromabasepdfloader.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loaders__chromabasepptxloader.html">Base (Private) Module: loaders/_chromabasepptxloader.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects__docbaseobject.html">Base (Private) Module: objects/_docbaseobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects__pageobject.html">Base (Private) Module: objects/_pageobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects__slideobject.html">Base (Private) Module: objects/_slideobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects__textobject.html">Base (Private) Module: objects/_textobject.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers__pdfbaseparser.html">Base (Private) Module: parsers/_pdfbaseparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers__pdftableparser.html">Base (Private) Module: parsers/_pdftableparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers__pdftextparser.html">Base (Private) Module: parsers/_pdftextparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers__pptxbaseparser.html">Base (Private) Module: parsers/_pptxbaseparser.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers__pptxtextparser.html">Base (Private) Module: parsers/_pptxtextparser.py</a></li>
+</ul>
+</div>
+<p>Last updated: 12 Feb 2025</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="docp Library Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dbs_chroma.html" class="btn btn-neutral float-right" title="Module: dbs/chroma.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

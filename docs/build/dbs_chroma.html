@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module: dbs/chroma.py &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=1be0d999"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module: libs/utilities.py" href="libs_utilities.html" />
+    <link rel="prev" title="Library API Documentation" href="library.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            docp
+              <img src="_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="library.html">Library API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="library.html#use-cases">Use Cases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="library.html#module-documentation">Module Documentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Module: dbs/chroma.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#docp.dbs.chroma.ChromaDB"><code class="docutils literal notranslate"><span class="pre">ChromaDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="libs_utilities.html">Module: libs/utilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapdfloader.html">Module: loaders/chromapdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_chromapptxloader.html">Module: loaders/chromapptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders_lutilities.html">Module: loaders/lutilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pdfobject.html">Module: objects/pdfobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects_pptxobject.html">Module: objects/pptxobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pdfparser.html">Module: parsers/pdfparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_pptxparser.html">Module: parsers/pptxparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers_putilities.html">Module: parsers/putilities.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabaseloader.html">Base (Private) Module: loaders/_chromabaseloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepdfloader.html">Base (Private) Module: loaders/_chromabasepdfloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loaders__chromabasepptxloader.html">Base (Private) Module: loaders/_chromabasepptxloader.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__docbaseobject.html">Base (Private) Module: objects/_docbaseobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__pageobject.html">Base (Private) Module: objects/_pageobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__slideobject.html">Base (Private) Module: objects/_slideobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="objects__textobject.html">Base (Private) Module: objects/_textobject.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdfbaseparser.html">Base (Private) Module: parsers/_pdfbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftableparser.html">Base (Private) Module: parsers/_pdftableparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pdftextparser.html">Base (Private) Module: parsers/_pdftextparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxbaseparser.html">Base (Private) Module: parsers/_pptxbaseparser.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parsers__pptxtextparser.html">Base (Private) Module: parsers/_pptxtextparser.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="library.html">Library API Documentation</a></li>
+      <li class="breadcrumb-item active">Module: dbs/chroma.py</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-docp.dbs.chroma">
+<span id="module-dbs-chroma-py"></span><h1>Module: dbs/chroma.py<a class="headerlink" href="#module-docp.dbs.chroma" title="Link to this heading"></a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Purpose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This module provides a localised wrapper and specialised
+functionality around the
+<code class="docutils literal notranslate"><span class="pre">langchain_community.vectorstores.Chroma</span></code> class, for
+interacting with a Chroma database.</p>
+</dd>
+<dt class="field-even">Platform<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linux/Windows | Python 3.10+</p>
+</dd>
+<dt class="field-odd">Developer<span class="colon">:</span></dt>
+<dd class="field-odd"><p>J Berendt</p>
+</dd>
+<dt class="field-even">Email<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="mailto:development&#37;&#52;&#48;s3dev&#46;uk">development<span>&#64;</span>s3dev<span>&#46;</span>uk</a></p>
+</dd>
+<dt class="field-odd">Comments<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This module uses the
+<code class="docutils literal notranslate"><span class="pre">langchain_community.vectorstores.Chroma</span></code> wrapper class,
+rather than the base <code class="docutils literal notranslate"><span class="pre">chromadb</span></code> library  as it provides the
+<code class="docutils literal notranslate"><span class="pre">add_texts</span></code> method which supports GPU processing and
+parallelisation; which is implemented by this module’s
+<a class="reference internal" href="#docp.dbs.chroma.ChromaDB.add_documents" title="docp.dbs.chroma.ChromaDB.add_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_documents()</span></code></a> method.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ChromaDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Chroma</span></code></p>
+<p>Wrapper class around the <code class="docutils literal notranslate"><span class="pre">chromadb</span></code> library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the chroma database’s <em>directory</em>.</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – Collection name.</p></li>
+<li><p><strong>offline</strong> (<em>bool</em><em>, </em><em>optional</em>) – Remain offline, used the cached
+embedding function model rather than obtaining one online.
+Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.client">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.client" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the <code class="xref py py-class docutils literal notranslate"><span class="pre">chromadb.PersistentClient</span></code> class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.collection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">collection</span></span><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.collection" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the chromadb client’s collection object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.embedding_function">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embedding_function</span></span><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.embedding_function" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the embedding function used.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.path" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the database’s path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.add_documents">
+<span class="sig-name descname"><span class="pre">add_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">langchain_core.documents.base.Document</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB.add_documents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.add_documents" title="Link to this definition"></a></dt>
+<dd><p>Add multiple documents to the collection.</p>
+<p>This method overrides the base class’ <code class="docutils literal notranslate"><span class="pre">add_documents</span></code> method
+to enable local ID derivation. Knowing <em>how</em> the IDs are derived
+gives us greater understanding and querying ability of the
+documents in the database. Each ID is derived locally by the
+<a class="reference internal" href="#docp.dbs.chroma.ChromaDB._preproc" title="docp.dbs.chroma.ChromaDB._preproc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_preproc()</span></code></a> method from the file’s basename, page number
+and page content.</p>
+<p>Additionally, this method wraps the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">langchain_community.vectorstores.Chroma.add_texts()</span></code>
+method which supports GPU processing and parallelisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>docs</strong> (<em>list</em>) – A list of <code class="docutils literal notranslate"><span class="pre">langchain_core.documents.base.Document</span></code>
+document objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB.show_all">
+<span class="sig-name descname"><span class="pre">show_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB.show_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB.show_all" title="Link to this definition"></a></dt>
+<dd><p>Return the entire contents of the collection.</p>
+<p>This is an alias around <code class="docutils literal notranslate"><span class="pre">.collection.get()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB._get_embedding_function_model">
+<span class="sig-name descname"><span class="pre">_get_embedding_function_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB._get_embedding_function_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB._get_embedding_function_model" title="Link to this definition"></a></dt>
+<dd><p>Derive the path to the embedding function model.</p>
+<dl class="field-list">
+<dt class="field-odd">Note<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If <code class="docutils literal notranslate"><span class="pre">offline=True</span></code> was passed into the class constructor,
+the model cache is used, if available - otherwise the user
+is warned.</p>
+<p>If online usage is allowed, the model is obtained by the
+means defined by the embedding function constructor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the model. Or, if offline, the path to the
+model’s cache to be passed into the embedding function
+constructor is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB._preproc">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_preproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB._preproc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB._preproc" title="Link to this definition"></a></dt>
+<dd><p>Pre-process the document objects to create the IDs.</p>
+<p>Parse the <code class="docutils literal notranslate"><span class="pre">Document</span></code> object into its parts for storage.
+Additionally, create the ID as a hash of the source document’s
+basename, page number and content.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB._set_client">
+<span class="sig-name descname"><span class="pre">_set_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB._set_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB._set_client" title="Link to this definition"></a></dt>
+<dd><p>Set the database client object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB._set_collection">
+<span class="sig-name descname"><span class="pre">_set_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB._set_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB._set_collection" title="Link to this definition"></a></dt>
+<dd><p>Set the database collection object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="docp.dbs.chroma.ChromaDB._set_embedding_fn">
+<span class="sig-name descname"><span class="pre">_set_embedding_fn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/docp/dbs/chroma.html#ChromaDB._set_embedding_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#docp.dbs.chroma.ChromaDB._set_embedding_fn" title="Link to this definition"></a></dt>
+<dd><p>Set the embeddings function object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="library.html" class="btn btn-neutral float-left" title="Library API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="libs_utilities.html" class="btn btn-neutral float-right" title="Module: libs/utilities.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

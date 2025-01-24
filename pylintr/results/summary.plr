@@ -1,16 +1,27 @@
 Pylint Summary:
 ------------------------
 dbs_chroma.plr: 10.00/10
+libs_changelog.plr:
+libs_utilities.plr: 10.00/10
 loaders__chromabaseloader.plr: 10.00/10
-loaders_chroma.plr: 10.00/10
+loaders__chromabasepdfloader.plr: 10.00/10
+loaders__chromabasepptxloader.plr: 10.00/10
+loaders_chromapdfloader.plr: 10.00/10
+loaders_chromapptxloader.plr: 10.00/10
 objects__docbaseobject.plr: 10.00/10
+objects__imgobject.plr:
 objects__pageobject.plr: 10.00/10
 objects_pdfobject.plr: 10.00/10
+objects_pptxobject.plr: 10.00/10
+objects__slideobject.plr: 10.00/10
 objects__tableobject.plr:
-objects__textobject.plr:
+objects__textobject.plr: 10.00/10
 parsers__pdfbaseparser.plr: 10.00/10
 parsers_pdfparser.plr: 10.00/10
 parsers__pdftableparser.plr: 10.00/10
 parsers__pdftextparser.plr: 10.00/10
+parsers__pptxbaseparser.plr: 10.00/10
+parsers_pptxparser.plr: 10.00/10
+parsers__pptxtextparser.plr: 10.00/10
 ------------------------
-Run date: Thu 16 Jan 14:15:11 GMT 2025
+Run date: Tue 4 Feb 16:44:53 GMT 2025

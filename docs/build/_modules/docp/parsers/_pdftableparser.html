@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>docp.parsers._pdftableparser &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1be0d999"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            docp
+              <img src="../../../_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../library.html">Library API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">docp.parsers._pdftableparser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for docp.parsers._pdftableparser</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:Purpose:   This module provides the logic for parsing tables from a PDF</span>
+<span class="sd">            document.</span>
+
+<span class="sd">:Platform:  Linux</span>
+<span class="sd">:Developer: J Berendt</span>
+<span class="sd">:Email:     jeremy.berendt@rolls-royce.com</span>
+
+<span class="sd">.. attention::</span>
+
+<span class="sd">            This module is *not* designed to be interacted with</span>
+<span class="sd">            directly, only via the appropriate interface class(es).</span>
+
+<span class="sd">            Rather, please create an instance of a PDF document parsing</span>
+<span class="sd">            object using the following:</span>
+
+<span class="sd">                - :class:`~docp.parsers.pdfparser.PDFParser`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=import-error</span>
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=wrong-import-order</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="c1"># locals</span>
+<span class="kn">from</span> <span class="nn">parsers._pdfbaseparser</span> <span class="kn">import</span> <span class="n">_PDFBaseParser</span>
+
+<span class="c1"># TODO: Move to a config file/class.  (TOML?)</span>
+<span class="n">_SETTINGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;vertical_strategy&#39;</span><span class="p">:</span> <span class="s1">&#39;lines&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;horizontal_strategy&#39;</span><span class="p">:</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;snap_x_tolerance&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="_PDFTableParser">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser">[docs]</a>
+<span class="k">class</span> <span class="nc">_PDFTableParser</span><span class="p">(</span><span class="n">_PDFBaseParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Private PDF document table parser intermediate class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): Full path to the PDF document.</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">        Extract tables from a PDF file::</span>
+
+<span class="sd">            &gt;&gt;&gt; from docp import PDFParser</span>
+
+<span class="sd">            &gt;&gt;&gt; pdf = PDFParser(path=&#39;/path/to/myfile.pdf&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; pdf.extract_tables()</span>
+
+<span class="sd">            &gt;&gt;&gt; tables = pdf.doc.tables</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_PDFTableParser.extract_tables">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser.extract_tables">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">table_settings</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">as_dataframe</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">to_csv</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract tables from the document.</span>
+
+<span class="sd">        Before a table is extracted, a number of validation tests are</span>
+<span class="sd">        performed to verify what has been identified as a &#39;table&#39; is</span>
+<span class="sd">        actually a table which might be useful to the user.</span>
+
+<span class="sd">        Each &#39;valid&#39; table is written as a CSV file on the user&#39;s</span>
+<span class="sd">        desktop.</span>
+
+<span class="sd">        Additionally, the extracted table data is stored to the class&#39;</span>
+<span class="sd">        :attr:`self.tables` attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            table_settings (dict, optional): Table settings to be used</span>
+<span class="sd">                for the table extraction. Defaults to None, which is</span>
+<span class="sd">                replaced by the value in the config.</span>
+<span class="sd">            as_dataframe (bool, optional): By default, the extracted</span>
+<span class="sd">                tables are returned as a list of (lists of lists), for</span>
+<span class="sd">                example: all_tables[table[rows[data]]]. However, if this</span>
+<span class="sd">                argument is ``True``, the table data is returned as a</span>
+<span class="sd">                list of ``pandas.DataFrame`` objects. In this case, the</span>
+<span class="sd">                first row of the table is used as the header, and all</span>
+<span class="sd">                remaining rows are treated as data. **Note:** This will</span>
+<span class="sd">                *not* work properly for all tables. Defaults to False.</span>
+<span class="sd">            to_csv (bool, optional): Dump extracted table data to a CSV</span>
+<span class="sd">                file, one per table. Defaults to True.</span>
+<span class="sd">            verbose (bool, optional): Display how many tables were</span>
+<span class="sd">                extracted, and the path to their location.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="c1"># pylint: disable=too-many-nested-blocks</span>
+        <span class="c1"># pylint: disable=unnecessary-dunder-call</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
+            <span class="c1"># Reinitialise the doc object and reopen the document.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">to_csv</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_table_directory_path</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">table_settings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">table_settings</span> <span class="o">=</span> <span class="n">_SETTINGS</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span><span class="o">.</span><span class="n">_pdf</span><span class="o">.</span><span class="n">pages</span><span class="p">:</span>
+            <span class="n">tblno</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">tables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_tables</span><span class="p">(</span><span class="n">tables</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">find_tables</span><span class="p">(),</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+                <span class="n">pc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">extract_table</span><span class="p">(</span><span class="n">table_settings</span><span class="o">=</span><span class="n">table_settings</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Verify no table rows are found in the most common rows (header/footer).</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_header_footer</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">data</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">as_dataframe</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span><span class="o">.</span><span class="n">_tables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">to_csv</span> <span class="ow">or</span> <span class="n">as_dataframe</span><span class="p">:</span>
+                            <span class="n">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_buffer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">to_csv</span><span class="p">:</span>
+                                <span class="n">c</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_csv</span><span class="p">(</span><span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">,</span>
+                                                  <span class="n">pageno</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">page_number</span><span class="p">,</span>
+                                                  <span class="n">tableno</span><span class="o">=</span><span class="n">tblno</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">as_dataframe</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_to_df</span><span class="p">(</span><span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">)</span>
+                            <span class="n">buffer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                        <span class="n">tblno</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">to_csv</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Complete.&#39;</span><span class="p">,</span>
+                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1"> tables were extracted and stored at the path below.&#39;</span><span class="p">,</span>
+                  <span class="sa">f</span><span class="s1">&#39;Path: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tbl_opath</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                  <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._create_table_directory_path">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._create_table_directory_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">_create_table_directory_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the output directory for table data.</span>
+
+<span class="sd">        If the directory does not exist, it is created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Defined in parent class.</span>
+        <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="p">{</span><span class="mi">32</span><span class="p">:</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span> <span class="s1">&#39;_&#39;</span><span class="p">}</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;HOME&#39;</span><span class="p">],</span> <span class="s1">&#39;Desktop&#39;</span><span class="p">),</span>
+                             <span class="s1">&#39;docutils&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;pdf_tables&#39;</span><span class="p">,</span>
+                             <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                              <span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                              <span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">trans</span><span class="p">))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tbl_opath</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._create_table_file_path">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._create_table_file_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">_create_table_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pageno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tblno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the filename for the table.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pageno (int): Page from which the table was extracted.</span>
+<span class="sd">            tblno (int): Number of the table on the page, starting at 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Explicit path to the file to be written.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tbl_opath</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s1">&#39;pg</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">pageno</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s1">_tb</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">tblno</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._filter_tables">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._filter_tables">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_filter_tables</span><span class="p">(</span><span class="n">tables</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove tables from the passed list which are deemed invalid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tables (list): A list of tables as detected by the</span>
+<span class="sd">                :meth:`Page.find_table()` method.</span>
+<span class="sd">            threshold (int, optional): Minimum pixel area for a detected</span>
+<span class="sd">                table to be returned. Defaults to 5000.</span>
+
+<span class="sd">        :Rationale:</span>
+<span class="sd">            An &#39;invalid&#39; table is determined by the number of pixels</span>
+<span class="sd">            which the table covered. Any table which is less than (N)</span>
+<span class="sd">            pixels is likely a block of text which has been categorised</span>
+<span class="sd">            as a &#39;table&#39;, but is not.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tables whose pixel area is greater than</span>
+<span class="sd">            ``threshold``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">bbox</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._table_header_footer">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._table_header_footer">[docs]</a>
+    <span class="k">def</span> <span class="nf">_table_header_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify a table is not a header or footer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            table (list[list]): Table (a list of lists) be a analysed.</span>
+
+<span class="sd">        :Rationale:</span>
+<span class="sd">            A table is determined to be a header or footer if any of the</span>
+<span class="sd">            line contained in the &#39;common lines list&#39; are found in the</span>
+<span class="sd">            table.</span>
+
+<span class="sd">            If any of these lines are found, the table is determined to</span>
+<span class="sd">            be a header/footer, True is returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: False if the table is *not* a header/footer, otherwise</span>
+<span class="sd">            True.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_common</span><span class="p">()</span>  <span class="c1"># Only re-runs if not already run.</span>
+        <span class="c1"># r: row; c: cell; l: line</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">l</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">table</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">r</span> <span class="k">if</span> <span class="n">c</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._to_buffer">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._to_buffer">[docs]</a>
+    <span class="k">def</span> <span class="nf">_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the table data into a string buffer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (list[list]): The table data as a list of lists to be</span>
+<span class="sd">                written to a buffer.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            io.StringIO: A string buffer as an ``io.StringIO`` object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_row</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._to_csv">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._to_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">,</span> <span class="n">pageno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tableno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a table (from the buffer) to CSV.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (io.StringIO): A pre-processed ``StringIO`` object</span>
+<span class="sd">                containing table data to be written.</span>
+<span class="sd">            pageno (int): Page number from the ``Page`` object.</span>
+<span class="sd">            tableno (int): Number of the table on the page, based at 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: 1 if the file was written, otherwise 0. This is used by</span>
+<span class="sd">            the caller to track the number of CSV files written.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">):</span>  <span class="c1"># Test buffer is populated.</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_table_file_path</span><span class="p">(</span><span class="n">pageno</span><span class="o">=</span><span class="n">pageno</span><span class="p">,</span> <span class="n">tblno</span><span class="o">=</span><span class="n">tableno</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="_PDFTableParser._to_df">
+<a class="viewcode-back" href="../../../parsers__pdftableparser.html#docp.parsers._pdftableparser._PDFTableParser._to_df">[docs]</a>
+    <span class="k">def</span> <span class="nf">_to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a table (from the buffer) to a DataFrame.</span>
+
+<span class="sd">        Once written, the DataFrame is appended to</span>
+<span class="sd">        :attr:`self._doc._tables` list of tables.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buffer (io.StringIO): A pre-processed ``StringIO`` object</span>
+<span class="sd">                containing table data to be written.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">SEEK_END</span><span class="p">):</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_doc</span><span class="o">.</span><span class="n">_tables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

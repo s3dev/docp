@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-:Purpose:   This module provides the implementation for the
-            document-type-specific base class.
+:Purpose:   This module provides the generalised base functionality for
+            the document-type-specific base classes.
 
 :Platform:  Linux/Windows | Python 3.10+
 :Developer: J Berendt
@@ -12,19 +12,15 @@
 
 """
 
-from __future__ import annotations
-try:
-    from .objects._pageobject import PageObject
-except ImportError:
-    from objects._pageobject import PageObject
-
 
 class _DocBase:
     """Private document base class.
 
-    This class is *not* designed to be interacted with directly, but
-    rather to be inherited by the document-type-specific document
-    objects.
+    .. attention::
+
+        This class is *not* designed to be interacted with directly, but
+        rather to be inherited by the document-type-specific document
+        objects.
 
     """
 
@@ -37,8 +33,6 @@ class _DocBase:
         self._npages = 0        # Number of pages in the document
         self._ntables = 0       # Number of tables extracted
         self._parser = None     # Underlying document parser functionality
-        # List of PageObjects, offset by 1 to align the index with page numbers.
-        self._pages = [PageObject(pageno=0)]
 
     @property
     def basename(self) -> str:
@@ -64,11 +58,6 @@ class _DocBase:
     def ntables(self) -> int:
         """The number of tables successfully extracted from the source."""
         return self._ntables
-
-    @property
-    def pages(self) -> list[PageObject]:  # noqa pylint: disable=undefined-variable
-        """A list of containing an object for each page in the document."""
-        return self._pages
 
     @property
     def parser(self) -> object:

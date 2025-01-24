@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>docp.loaders._chromabaseloader &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1be0d999"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            docp
+              <img src="../../../_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../library.html">Library API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">docp.loaders._chromabaseloader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for docp.loaders._chromabaseloader</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:Purpose:   This module provides the base functionality for parsing and</span>
+<span class="sd">            storing a document&#39;s data into a Chroma vector database.</span>
+
+<span class="sd">:Platform:  Linux/Windows | Python 3.10+</span>
+<span class="sd">:Developer: J Berendt</span>
+<span class="sd">:Email:     development@s3dev.uk</span>
+
+<span class="sd">:Comments:  n/a</span>
+
+<span class="sd">.. attention::</span>
+
+<span class="sd">            This module is *not* designed to be interacted with</span>
+<span class="sd">            directly, only via the appropriate interface class(es).</span>
+
+<span class="sd">            Rather, please create an instance of a Chroma</span>
+<span class="sd">            document-type-specific loader object using one of the</span>
+<span class="sd">            following classes:</span>
+
+<span class="sd">                - :class:`~docp.loaders.chromapdfloader.ChromaPDFLoader`</span>
+<span class="sd">                - :class:`~docp.loaders.chromapptxloader.ChromaPPTXLoader`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=no-name-in-module  # langchain.chains.RetrievalQA</span>
+
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">chromadb.api.types</span> <span class="kn">import</span> <span class="n">errors</span> <span class="k">as</span> <span class="n">chromadberrors</span>
+<span class="kn">from</span> <span class="nn">langchain.chains</span> <span class="kn">import</span> <span class="n">RetrievalQA</span>
+<span class="kn">from</span> <span class="nn">langchain.docstore.document</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">langchain.text_splitter</span> <span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
+<span class="kn">from</span> <span class="nn">utils4.reporterror</span> <span class="kn">import</span> <span class="n">reporterror</span>
+<span class="kn">from</span> <span class="nn">utils4.user_interface</span> <span class="kn">import</span> <span class="n">ui</span>
+<span class="c1"># locals</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.dbs.chroma</span> <span class="kn">import</span> <span class="n">ChromaDB</span>
+    <span class="kn">from</span> <span class="nn">.libs.utilities</span> <span class="kn">import</span> <span class="n">utilities</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">dbs.chroma</span> <span class="kn">import</span> <span class="n">ChromaDB</span>
+    <span class="kn">from</span> <span class="nn">libs.utilities</span> <span class="kn">import</span> <span class="n">utilities</span>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader">[docs]</a>
+<span class="k">class</span> <span class="nc">_ChromaBaseLoader</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for loading documents into a Chroma vector database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dbpath (str | ChromaDB): Either the full path to the Chroma</span>
+<span class="sd">            database *directory*, or an instance of a</span>
+<span class="sd">            :class:`~docp.dbs.chroma.ChromaDB` class. If the instance is</span>
+<span class="sd">            passed, the ``collection`` argument is ignored.</span>
+<span class="sd">        collection (str, optional): Name of the Chroma database</span>
+<span class="sd">            collection. Only required if the ``db`` parameter is a path.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        split_text (bool, optional): Split the document into chunks,</span>
+<span class="sd">            before loading it into the database. Defaults to True.</span>
+<span class="sd">        load_keywords (bool, optional): Derive keywords from the document</span>
+<span class="sd">            and load these into the sister keywords collection.</span>
+<span class="sd">            Defaults to False.</span>
+<span class="sd">        llm (object, optional): If deriving keywords, this is the LLM</span>
+<span class="sd">            which will do the derivation. Defaults to None.</span>
+<span class="sd">        offline (bool, optional): Remain offline and use the locally</span>
+<span class="sd">            cached embedding function model. Defaults to False.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=assignment-from-no-return  # These are stub methods.</span>
+
+    <span class="n">_PFX_ERR</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[ERROR]:&#39;</span>
+    <span class="n">_PFX_WARN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[WARNING]:&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">dbpath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ChromaDB</span><span class="p">,</span>
+                 <span class="n">collection</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">*</span><span class="p">,</span>
+                 <span class="n">split_text</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">load_keywords</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">llm</span><span class="p">:</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">offline</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chroma database class initialiser.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dbpath</span> <span class="o">=</span> <span class="n">dbpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cname</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_split_text</span> <span class="o">=</span> <span class="n">split_text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_keywords</span> <span class="o">=</span> <span class="n">load_keywords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_llm</span> <span class="o">=</span> <span class="n">llm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offline</span> <span class="o">=</span> <span class="n">offline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span> <span class="o">=</span> <span class="kc">None</span>            <span class="c1"># Database object.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span> <span class="o">=</span> <span class="p">[]</span>             <span class="c1"># List of &#39;Document&#39; objects.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docss</span> <span class="o">=</span> <span class="p">[]</span>            <span class="c1"># List of &#39;Document&#39; objects *with splits*.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span> <span class="o">=</span> <span class="kc">None</span>          <span class="c1"># Basename of the document currently being loaded.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fpath</span> <span class="o">=</span> <span class="kc">None</span>          <span class="c1"># Full path to the document currently being loaded.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_p</span> <span class="o">=</span> <span class="kc">None</span>              <span class="c1"># Document parser object.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splitter</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># Text splitter.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_db_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_parameters</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chroma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accessor to the database client object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Accessor to the document parser object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p</span>
+
+<div class="viewcode-block" id="_ChromaBaseLoader._already_loaded">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._already_loaded">[docs]</a>
+    <span class="k">def</span> <span class="nf">_already_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test if the file has already been loaded into the collection.</span>
+
+<span class="sd">        :Logic:</span>
+<span class="sd">            This test is performed by querying the collection for a</span>
+<span class="sd">            metadata &#39;source&#39; which equals the filename. As this uses</span>
+<span class="sd">            a chromadb &#39;filter&#39; (i.e. ``$eq``), testing for partial</span>
+<span class="sd">            matches is not possible at this time.</span>
+
+<span class="sd">            If the filename is different (in any way) from the source&#39;s</span>
+<span class="sd">            filename in the database, the file will be loaded again.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True is the *exact* filename was found in the</span>
+<span class="sd">            collection&#39;s metadata, otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="p">}})[</span><span class="s1">&#39;ids&#39;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-- File already loaded: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="si">}</span><span class="s1"> - skipping&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._check_parameters">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._check_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">_check_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the class parameters are viable.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the ``load_keywords`` argument is True and the</span>
+<span class="sd">                ``llm`` argument is None, or the inverse. Both arguments</span>
+<span class="sd">                must either sum to 0, or 2.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_keywords</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_llm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For keyword loading, the load_keywords argument &#39;</span>
+                             <span class="s1">&#39;must be True and a model instance must be provided.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._create_documents">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._create_documents">[docs]</a>
+    <span class="k">def</span> <span class="nf">_create_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stub method; overridden by the child class.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._get_keywords">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._get_keywords">[docs]</a>
+    <span class="k">def</span> <span class="nf">_get_keywords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Query the document (using the LLM) to extract the keywords.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- Extracting keywords ...&#39;</span><span class="p">)</span>
+        <span class="n">qry</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;List the important keywords which can be used to summarize this &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;document: &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="si">}</span><span class="s1">&quot;. Use only phrases which are found in the document.&#39;</span><span class="p">)</span>
+        <span class="c1"># Suppress stdout.</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">redirect_stdout</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">nids</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="p">})[</span><span class="s1">&#39;ids&#39;</span><span class="p">])</span>
+            <span class="c1"># Max of 50, min n records; prefer n records or 10%.</span>
+            <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">nids</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">nids</span><span class="o">//</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">))),</span>
+                       <span class="s1">&#39;filter&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="p">}}}</span>
+            <span class="c1"># TODO: Replace this with the module.cless.method once created.</span>
+            <span class="n">qa</span> <span class="o">=</span> <span class="n">RetrievalQA</span><span class="o">.</span><span class="n">from_chain_type</span><span class="p">(</span><span class="n">llm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_llm</span><span class="p">,</span>
+                                             <span class="n">chain_type</span><span class="o">=</span><span class="s2">&quot;stuff&quot;</span><span class="p">,</span>
+                                             <span class="n">retriever</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">search_kwargs</span><span class="o">=</span><span class="n">filter_</span><span class="p">),</span>
+                                             <span class="n">return_source_documents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">qa</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">qry</span><span class="p">)</span>
+        <span class="n">kwds</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">parse_to_keywords</span><span class="p">(</span><span class="n">resp</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">kwds</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._load">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._load">[docs]</a>
+    <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the provided file into the vector store.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Full path to the file to be loaded.</span>
+
+<span class="sd">        :Keyword Arguments:</span>
+<span class="sd">            Those passed from the document-type-specific loader&#39;s</span>
+<span class="sd">            :func:`load` method.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=multiple-statements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fpath</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_already_loaded</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_parser</span><span class="p">()</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_text_splitter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_text</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_documents</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_texts</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_worker</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_keywords</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_llm</span><span class="p">:</span>
+            <span class="n">kwds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_keywords</span><span class="p">()</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_keywords</span><span class="p">(</span><span class="n">kwds</span><span class="o">=</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_print_summary</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="n">s</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._load_worker">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._load_worker">[docs]</a>
+    <span class="k">def</span> <span class="nf">_load_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the split documents into the database collection.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if loaded successfully, otherwise False. Success</span>
+<span class="sd">            is based on the number of records after the load being</span>
+<span class="sd">            greater than the number of records before the load, or not</span>
+<span class="sd">            exceptions being raised.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- Loading the document into the database ...&#39;</span><span class="p">)</span>
+            <span class="n">nrecs_b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>  <span class="c1"># Count records before.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docss</span><span class="p">)</span>
+            <span class="n">nrecs_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>  <span class="c1"># Count records after.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_load</span><span class="p">(</span><span class="n">nrecs_b</span><span class="o">=</span><span class="n">nrecs_b</span><span class="p">,</span> <span class="n">nrecs_a</span><span class="o">=</span><span class="n">nrecs_a</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">chromadberrors</span><span class="o">.</span><span class="n">DuplicateIDError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  -- Document *chunk* already loaded, duplication detected. File may be corrupt.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Prevent from loading keywords.</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">reporterror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._parse_text">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._parse_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">_parse_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stub method, overridden by the child class.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._print_summary">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._print_summary">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_print_summary</span><span class="p">(</span><span class="n">success</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print an end of processing summary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            success (bool): Success flag from the processor.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Processing complete. Success.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Processing aborted due to error. Failure.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._set_db_client">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._set_db_client">[docs]</a>
+    <span class="k">def</span> <span class="nf">_set_db_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the database client object.</span>
+
+<span class="sd">        If the ``_db`` object is a string, this is inferred as the *path*</span>
+<span class="sd">        to the database. Otherwise, it is inferred as the database object</span>
+<span class="sd">        itself.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the database object is set without error.</span>
+<span class="sd">            Otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbpath</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span> <span class="o">=</span> <span class="n">ChromaDB</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbpath</span><span class="p">,</span>
+                                     <span class="n">collection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cname</span><span class="p">,</span>
+                                     <span class="n">offline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_offline</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbpath</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">reporterror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._set_parser">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._set_parser">[docs]</a>
+    <span class="k">def</span> <span class="nf">_set_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stub method, overridden by the child class.&quot;&quot;&quot;</span></div>
+
+
+    <span class="c1"># TODO: Add these to a config file.</span>
+<div class="viewcode-block" id="_ChromaBaseLoader._set_text_splitter">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._set_text_splitter">[docs]</a>
+    <span class="k">def</span> <span class="nf">_set_text_splitter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the text splitter to be used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True, always.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splitter</span> <span class="o">=</span> <span class="n">RecursiveCharacterTextSplitter</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+                                                        <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+                                                        <span class="n">separators</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;</span><span class="se">\n\n\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._split_texts">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._split_texts">[docs]</a>
+    <span class="k">def</span> <span class="nf">_split_texts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split the document text using a recursive text splitter.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            If the ``split_text`` parameter was passed as ``False`` on</span>
+<span class="sd">            instantiation, the texts will not be split. Rather, the</span>
+<span class="sd">            :attr:`_docs` list is simply *copied* to the :attr:`_docss`</span>
+<span class="sd">            attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the text was split (or copied) successfully,</span>
+<span class="sd">            otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_splitter</span><span class="o">.</span><span class="n">split_documents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[:]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docss</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_PFX_ERR</span><span class="si">}</span><span class="s1"> An error occurred while splitting the documents for &#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="n">ui</span><span class="o">.</span><span class="n">print_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._store_keywords">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._store_keywords">[docs]</a>
+    <span class="k">def</span> <span class="nf">_store_keywords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwds</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store the extracted keywords into the keywords collection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kwds (str): A string containing the keywords extracted from</span>
+<span class="sd">                the document.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if loaded successfully, otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- Storing keywords ...&#39;</span><span class="p">)</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">ChromaDB</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbo</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cname</span><span class="si">}</span><span class="s1">-kwds&#39;</span><span class="p">,</span> <span class="n">offline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_offline</span><span class="p">)</span>
+        <span class="n">nrecs_b</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>  <span class="c1"># Count records before.</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">page_content</span><span class="o">=</span><span class="n">kwds</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fbase</span><span class="p">})]</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">add_documents</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="n">nrecs_a</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>  <span class="c1"># Count records after.</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">nrecs_a</span> <span class="o">-</span> <span class="n">nrecs_b</span></div>
+
+
+<div class="viewcode-block" id="_ChromaBaseLoader._test_load">
+<a class="viewcode-back" href="../../../loaders__chromabaseloader.html#docp.loaders._chromabaseloader._ChromaBaseLoader._test_load">[docs]</a>
+    <span class="k">def</span> <span class="nf">_test_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nrecs_b</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nrecs_a</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the document was loaded successfully.</span>
+
+<span class="sd">        :Test:</span>
+<span class="sd">            - Given a count of records before the load, verify the number</span>
+<span class="sd">              of records after the load is equal to the number of records</span>
+<span class="sd">              before, plus the number of split documents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nrecs_b (int): Number of records *before* the load.</span>
+<span class="sd">            nrecs_a (int): Number of records *after* the load.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the number of records before the load plus the</span>
+<span class="sd">            number is splits is equal to the number of records after the</span>
+<span class="sd">            load.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">nrecs_a</span> <span class="o">==</span> <span class="n">nrecs_b</span><span class="p">:</span>
+            <span class="n">ui</span><span class="o">.</span><span class="n">print_warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_PFX_WARN</span><span class="si">}</span><span class="s1"> No new documents added. Possibly already loaded?&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nrecs_a</span> <span class="o">==</span> <span class="n">nrecs_b</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docss</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

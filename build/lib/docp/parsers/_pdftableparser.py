@@ -8,14 +8,15 @@
 :Developer: J Berendt
 :Email:     jeremy.berendt@rolls-royce.com
 
-Note:       This module is *not* designed to be interacted with
+.. attention::
+
+            This module is *not* designed to be interacted with
             directly, only via the appropriate interface class(es).
 
             Rather, please create an instance of a PDF document parsing
             object using the following:
 
-                - :class:`pdfparser.PDFParser`
-
+                - :class:`~docp.parsers.pdfparser.PDFParser`
 
 """
 # pylint: disable=import-error
@@ -35,7 +36,6 @@ _SETTINGS = {'vertical_strategy': 'lines',
              'snap_x_tolerance': 12}
 
 
-# TODO: Revise the docstring.
 class _PDFTableParser(_PDFBaseParser):
     """Private PDF document table parser intermediate class.
 
@@ -46,10 +46,9 @@ class _PDFTableParser(_PDFBaseParser):
 
         Extract tables from a PDF file::
 
-            >>> from docutils.parsers.pdf import PDFParser
+            >>> from docp import PDFParser
 
-            >>> path = '/path/to/myfile.pdf'
-            >>> pdf = PDFParser(path)
+            >>> pdf = PDFParser(path='/path/to/myfile.pdf')
             >>> pdf.extract_tables()
 
             >>> tables = pdf.doc.tables

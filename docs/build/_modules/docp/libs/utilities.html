@@ -1,0 +1,226 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>docp.libs.utilities &mdash; docp - v0.2.0 Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/s5defs-rules.css?v=0345028d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=1be0d999"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            docp
+              <img src="../../../_static/s3dev_tri_white_sm.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../library.html">Library API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contact.html">Contact Us</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">docp</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">docp.libs.utilities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for docp.libs.utilities</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:Purpose:   This module provides utility-based functionality for the</span>
+<span class="sd">            project.</span>
+
+<span class="sd">:Platform:  Linux/Windows | Python 3.10+</span>
+<span class="sd">:Developer: J Berendt</span>
+<span class="sd">:Email:     development@s3dev.uk</span>
+
+<span class="sd">:Comments:  n/a</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;../../&#39;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">utils4</span> <span class="kn">import</span> <span class="n">futils</span>
+
+
+<div class="viewcode-block" id="Utilities">
+<a class="viewcode-back" href="../../../libs_utilities.html#docp.libs.utilities.Utilities">[docs]</a>
+<span class="k">class</span> <span class="nc">Utilities</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;General (cross-project) utility functions.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Utilities.collect_files">
+<a class="viewcode-back" href="../../../libs_utilities.html#docp.libs.utilities.Utilities.collect_files">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">collect_files</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect all files for a given extension from a path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Full path serving as the root for the search.</span>
+<span class="sd">            ext (str, optional): If the ``path`` argument refers to a</span>
+<span class="sd">                *directory*, a specific file extension can be specified</span>
+<span class="sd">                here. For example: ``ext = &#39;pdf&#39;``.</span>
+
+<span class="sd">                If anything other than ``&#39;**&#39;`` is provided, all</span>
+<span class="sd">                alpha-characters are parsed from the string, and prefixed</span>
+<span class="sd">                with ``*.``. Meaning, if ``&#39;.pdf&#39;`` is passed, the</span>
+<span class="sd">                characters ``&#39;pdf&#39;`` are parsed and prefixed with ``*.``</span>
+<span class="sd">                to create ``&#39;*.pdf&#39;``. However, if ``&#39;things.foo&#39;`` is</span>
+<span class="sd">                passed, the derived extension will be ``&#39;*.thingsfoo&#39;``.</span>
+<span class="sd">                Defaults to &#39;**&#39;, for a recursive search.</span>
+
+<span class="sd">            recursive (bool): Instruct the search to recurse into</span>
+<span class="sd">                sub-directories.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The list of full file paths returned by the ``glob``</span>
+<span class="sd">            call. Any directory-only paths are removed.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;**&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;*.</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;[a-zA-Z]+&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="p">),</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)))</span></div>
+
+
+    <span class="c1"># !!!: Replace this with utils4.futils when available.</span>
+<div class="viewcode-block" id="Utilities.ispdf">
+<a class="viewcode-back" href="../../../libs_utilities.html#docp.libs.utilities.Utilities.ispdf">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ispdf</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the file signature. Verify this is a valid PDF file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the file being tested.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if this is a valid PDF file, otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sig</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x25\x50\x44\x46\x2d</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="Utilities.iszip">
+<a class="viewcode-back" href="../../../libs_utilities.html#docp.libs.utilities.Utilities.iszip">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">iszip</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test the file signature. Verify this is a valid ZIP archive.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): Path to the file being tested.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if this is a valid ZIP archive, otherwise False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">futils</span><span class="o">.</span><span class="n">iszip</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Utilities.parse_to_keywords">
+<a class="viewcode-back" href="../../../libs_utilities.html#docp.libs.utilities.Utilities.parse_to_keywords">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_to_keywords</span><span class="p">(</span><span class="n">resp</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the bot&#39;s response into a list of keywords.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            resp (str): Text response directly from the bot.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of keywords extracted from the response,</span>
+<span class="sd">            separated by asterisks as bullet points.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Capture asterisk bullet points or a numbered list.</span>
+        <span class="n">rexp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:\*|[0-9]+\.)\s*(.*)\n&#39;</span><span class="p">)</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="p">{</span><span class="mi">45</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">47</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="p">}</span>
+        <span class="n">resp_</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">kwds</span> <span class="o">=</span> <span class="n">rexp</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">resp_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwds</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+</div>
+
+
+
+<span class="n">utilities</span> <span class="o">=</span> <span class="n">Utilities</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-2025 | s3dev | version 0.2.0.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
